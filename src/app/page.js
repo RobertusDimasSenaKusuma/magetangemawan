@@ -8,7 +8,7 @@ async function extractAllDatas(currentSection) {
   try {
     // Menggunakan URL absolut untuk production atau relatif untuk development
     const baseUrl = process.env.NODE_ENV === 'production'
-      ? process.env.NEXT_PUBLIC_BASE_URL || 'https://sumbersawitmagetan.vercel.app'
+      ? process.env.NEXT_PUBLIC_BASE_URL || 'https://magetangemawan-robertusdimassenakusumas-projects.vercel.app'
       : 'http://localhost:3000';
         
     const fullUrl = `${baseUrl}/api/${currentSection}/get`;
