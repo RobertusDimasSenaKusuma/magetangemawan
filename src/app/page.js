@@ -7,11 +7,15 @@ import ClientProjectView from "@/components/client-view/project";
 async function extractAllDatas(currentSection) {
   try {
     // Menggunakan URL absolut untuk production atau relatif untuk development
-    const baseUrl = process.env.NODE_ENV === 'production' 
+    const baseUrl = process.env.NODE_ENV === 'production'
       ? process.env.NEXT_PUBLIC_BASE_URL || 'https://sumbersawitmagetan.vercel.app'
       : 'http://localhost:3000';
+        
+    const fullUrl = `${baseUrl}/api/${currentSection}/get`;
+    console.log(`🔍 Fetching ${currentSection} from:`, fullUrl);
+    console.log(`🌍 Environment:`, process.env.NODE_ENV);
     
-    const res = await fetch(`${baseUrl}/api/${currentSection}/get`, {
+    const res = await fetch(fullUrl, {
       method: "GET",
       cache: "no-store",
       headers: {
@@ -19,21 +23,31 @@ async function extractAllDatas(currentSection) {
       },
     });
 
+    console.log(`📡 Response status for ${currentSection}:`, res.status);
+
     if (!res.ok) {
-      console.error(`Failed to fetch ${currentSection}:`, res.status, res.statusText);
+      console.error(`❌ Failed to fetch ${currentSection}:`, res.status, res.statusText);
       return null;
     }
 
     const data = await res.json();
-    return data && data.data;
+    console.log(`📦 Raw response for ${currentSection}:`, data);
+    
+    // Periksa struktur data - sesuaikan dengan API response Anda
+    const processedData = data && data.data ? data.data : data;
+    console.log(`✅ Processed data for ${currentSection}:`, processedData);
+    
+    return processedData;
   } catch (error) {
-    console.error(`Error fetching ${currentSection}:`, error);
+    console.error(`💥 Error fetching ${currentSection}:`, error);
     return null;
   }
 }
 
 export default async function Home() {
   try {
+    console.log('🏠 Starting Home component data fetch...');
+    
     // Menggunakan Promise.allSettled untuk menghindari error jika salah satu API gagal
     const [
       homeSectionResult,
@@ -49,12 +63,30 @@ export default async function Home() {
       extractAllDatas("project")
     ]);
 
+    // Log hasil Promise.allSettled
+    console.log('📊 Promise results:', {
+      home: homeSectionResult,
+      about: aboutSectionResult,
+      experience: experienceSectionResult,
+      education: educationSectionResult,
+      project: projectSectionResult
+    });
+
     // Mengambil data dari hasil Promise.allSettled
     const homeSectionData = homeSectionResult.status === 'fulfilled' ? homeSectionResult.value : null;
     const aboutSectionData = aboutSectionResult.status === 'fulfilled' ? aboutSectionResult.value : null;
     const experienceSectionData = experienceSectionResult.status === 'fulfilled' ? experienceSectionResult.value : null;
     const educationSectionData = educationSectionResult.status === 'fulfilled' ? educationSectionResult.value : null;
     const projectSectionData = projectSectionResult.status === 'fulfilled' ? projectSectionResult.value : null;
+
+    // Log final data yang akan dikirim ke components
+    console.log('🎯 Final data to components:', {
+      home: homeSectionData,
+      about: aboutSectionData,
+      experience: experienceSectionData,
+      education: educationSectionData,
+      project: projectSectionData
+    });
 
     return (
       <div>
@@ -73,8 +105,8 @@ export default async function Home() {
       </div>
     );
   } catch (error) {
-    console.error('Error in Home component:', error);
-    
+    console.error('💥 Error in Home component:', error);
+        
     // Fallback UI jika terjadi error
     return (
       <div>
