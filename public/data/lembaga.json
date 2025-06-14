@@ -1,0 +1,68 @@
+{
+  "lembaga": [
+    {
+      "id": 1,
+      "nama": "BPD",
+      "kategori": "Pemerintahan",
+      "deskripsi": "Badan Permusyawaratan Desa yang berperan dalam perencanaan dan pengawasan pembangunan desa.",
+      "tahun_berdiri": 2000,
+      "foto": "/images/bpd.jpg"
+    },
+    {
+      "id": 2,
+      "nama": "PKK",
+      "kategori": "Sosial",
+      "deskripsi": "Pemberdayaan Kesejahteraan Keluarga, fokus pada pemberdayaan perempuan dan keluarga.",
+      "tahun_berdiri": 1995,
+      "foto": "/images/pkk.jpg"
+    },
+    {
+      "id": 3,
+      "nama": "Karang Taruna",
+      "kategori": "Pemuda",
+      "deskripsi": "Organisasi pemuda yang menggerakkan kegiatan sosial, budaya, dan pemberdayaan generasi muda.",
+      "tahun_berdiri": 2005,
+      "foto": "/images/karang_taruna.jpg"
+    },
+    {
+      "id": 4,
+      "nama": "LPMD",
+      "kategori": "Pemerintahan",
+      "deskripsi": "Lembaga Pemberdayaan Masyarakat Desa yang mendukung program pembangunan desa.",
+      "tahun_berdiri": 2002,
+      "foto": "/images/lpmd.jpg"
+    },
+    {
+      "id": 5,
+      "nama": "Posyandu Mawar",
+      "kategori": "Kesehatan",
+      "deskripsi": "Pos Pelayanan Terpadu untuk kesehatan ibu dan anak, termasuk imunisasi dan penyuluhan.",
+      "tahun_berdiri": 2010,
+      "foto": "/images/posyandu_mawar.jpg"
+    },
+    {
+      "id": 6,
+      "nama": "Kelompok Tani Makmur",
+      "kategori": "Ekonomi",
+      "deskripsi": "Kelompok petani yang bekerja sama untuk meningkatkan produktivitas pertanian desa.",
+      "tahun_berdiri": 2008,
+      "foto": "/images/kelompok_tani.jpg"
+    },
+    {
+      "id": 7,
+      "nama": "Posyandu Mawar",
+      "kategori": "Kesehatan",
+      "deskripsi": "Pos Pelayanan Terpadu untuk kesehatan ibu dan anak, termasuk imunisasi dan penyuluhan.",
+      "tahun_berdiri": 2010,
+      "foto": "/images/posyandu_mawar.jpg"
+    },
+    {
+      "id": 8,
+      "nama": "Kelompok Tani Makmur",
+      "kategori": "Ekonomi",
+      "deskripsi": "Kelompok petani yang bekerja sama untuk meningkatkan produktivitas pertanian desa.",
+      "tahun_berdiri": 2008,
+      "foto": "/images/kelompok_tani.jpg"
+    }
+  ]
+}

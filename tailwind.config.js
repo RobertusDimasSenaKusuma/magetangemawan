@@ -39,12 +39,12 @@ module.exports = {
         main : "#718a40"
       },
       green1: {
-        500: "#718a40",
-        main : "#718a40"
+        500: "#059669",
+        main : "#059669"
       },
       white: {
         300: "#F8F8F8",
-        500: "#fff",
+        500: "#ffffff",
       },
       gray: {
         100: "#EEEFF2",

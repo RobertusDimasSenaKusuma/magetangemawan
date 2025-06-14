@@ -1,6 +1,8 @@
 "use client";
 import { useEffect, useState } from "react";
 import { Link as LinkScroll, scroller } from "react-scroll";
+import Link from "next/link";
+import { useRouter, usePathname } from "next/navigation";
 import Image from "next/image";
 import logo1 from "../../../assets/logo1.jpg";
 import logo2 from "../../../assets/logo2.jpg";
@@ -9,65 +11,230 @@ import logo3 from "../../../assets/logo3.jpg";
 const menuItems = [
   {
     id: "home",
-    label: "Home",
+    label: "Beranda",
+    isPage: true,
+    href: "/",
   },
   {
     id: "about",
-    label: "About",
+    label: "Tentang Desa",
+    isPage: false, // section scroll di homepage
+    hasDropdown: true,
+    dropdownItems: [
+      {
+        id: "about",
+        label: "profil desa",
+        isPage: false, // section scroll di homepage
+      },
+      {
+        id: "prasarana",
+        label: "Prasarana",
+        isPage: true,
+        href: "/prasarana"
+      },
+      {
+        id: "kegiatan",
+        label: "Kegiatan",
+        isPage: true,
+        href: "/kegiatan",
+      },
+      {
+        id: "lembaga",
+        label: "Lembaga",
+        isPage: true,
+        href: "/lembaga",
+      },
+    ],
   },
   {
     id: "experience",
     label: "Experience",
+    isPage: false, // section scroll di homepage
   },
   {
-    id: "project",
-    label: "Projects",
+    id: "potensi",
+    label: "Potensi Desa",
+    isPage: true, // UBAH: dari false ke true agar bisa pindah halaman
+    href: "/potensi", // TAMBAH: tambahkan href untuk navigasi
   },
-  {
+  { 
     id: "contact",
     label: "Contact",
+    isPage: false, // section scroll di homepage
   },
 ];
 
-function CreateMenus({ activeLink, getMenuItems, setActiveLink, isMobile = false, closeMobileMenu }) {
+function CreateMenus({ activeLink, getMenuItems, setActiveLink, isMobile = false, closeMobileMenu, currentPath }) {
+  const router = useRouter();
+  const [dropdownOpen, setDropdownOpen] = useState(null);
+
+  const handleClick = (item, isFromDropdown = false) => {
+    if (item.isPage) {
+      // Navigasi ke halaman lain
+      router.push(item.href);
+      setActiveLink(item.id);
+    } else {
+      // Scroll ke section (hanya jika di homepage)
+      if (currentPath === "/") {
+        // Langsung scroll jika sudah di homepage
+        scroller.scrollTo(item.id, {
+          duration: 1000,
+          smooth: true,
+        });
+        setActiveLink(item.id);
+      } else {
+        // Redirect ke homepage lalu scroll
+        router.push(`/#${item.id}`);
+        setActiveLink(item.id);
+      }
+    }
+    
+    if (closeMobileMenu) closeMobileMenu();
+    setDropdownOpen(null);
+  };
+
+  const handleMainMenuClick = (item) => {
+    // Untuk menu utama dengan dropdown, jangan langsung navigate
+    // Hanya buka dropdown atau tidak melakukan apa-apa
+    if (item.hasDropdown && !isMobile) {
+      // Untuk desktop, dropdown sudah dihandle oleh hover
+      return;
+    } else if (item.hasDropdown && isMobile) {
+      // Untuk mobile, toggle dropdown
+      handleDropdownToggle(item.id);
+    } else {
+      // Menu biasa tanpa dropdown
+      handleClick(item);
+    }
+  };
+
+  const handleDropdownToggle = (itemId) => {
+    if (isMobile) {
+      setDropdownOpen(dropdownOpen === itemId ? null : itemId);
+    }
+  };
+
+  const handleMouseEnter = (itemId) => {
+    if (!isMobile) {
+      setDropdownOpen(itemId);
+    }
+  };
+
+  const handleMouseLeave = () => {
+    if (!isMobile) {
+      setDropdownOpen(null);
+    }
+  };
+
   if (isMobile) {
     return getMenuItems.map((item) => (
       <li key={item.id} className="w-full">
-        <LinkScroll
-          activeClass="active"
-          to={item.id}
-          spy={true}
-          smooth={true}
-          duration={1000}
-          onSetActive={() => setActiveLink(item.id)}
-          onClick={() => closeMobileMenu && closeMobileMenu()}
-          className="w-full block px-6 py-4 text-lg border-b border-gray-200 hover:bg-gray-100 text-left cursor-pointer text-[#000] font-bold hover:text-green1-main transition-colors duration-300"
-        >
-          {item.label}
-        </LinkScroll>
+        {item.hasDropdown ? (
+          <>
+            <div className="flex items-center justify-between">
+              <button
+                onClick={() => handleMainMenuClick(item)}
+                className="flex-1 block px-6 py-4 text-lg border-b border-gray-200 hover:bg-gray-100 text-left cursor-pointer text-[#000] font-bold hover:text-green1-main transition-colors duration-300"
+              >
+                {item.label}
+              </button>
+              <button
+                onClick={() => handleDropdownToggle(item.id)}
+                className="px-4 py-4 border-b border-gray-200 hover:bg-gray-100 text-[#000] transition-colors duration-300"
+              >
+                <svg 
+                  className={`w-5 h-5 transform transition-transform duration-300 ${
+                    dropdownOpen === item.id ? 'rotate-180' : ''
+                  }`} 
+                  fill="none" 
+                  stroke="currentColor" 
+                  viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+            </div>
+            {dropdownOpen === item.id && (
+              <ul className="bg-white shadow-sm border-t border-gray-100">
+                {item.dropdownItems.map((dropdownItem) => (
+                  <li key={dropdownItem.id}>
+                    <button
+                      onClick={() => handleClick(dropdownItem)}
+                      className="w-full block px-12 py-3 text-base border-b border-gray-100 hover:bg-gray-50 text-left cursor-pointer text-gray-700 hover:text-green1-main transition-colors duration-300"
+                    >
+                      {dropdownItem.label}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </>
+        ) : (
+          <button
+            onClick={() => handleMainMenuClick(item)}
+            className="w-full block px-6 py-4 text-lg border-b border-gray-200 hover:bg-gray-100 text-left cursor-pointer text-[#000] font-bold hover:text-green1-main transition-colors duration-300"
+          >
+            {item.label}
+          </button>
+        )}
       </li>
     ));
   }
 
   return getMenuItems.map((item) => (
-    <LinkScroll
-      key={item.id}
-      activeClass="active"
-      to={item.id}
-      spy={true}
-      smooth={true}
-      duration={1000}
-      onSetActive={() => setActiveLink(item.id)}
-      className={`px-4 py-2 mx-2 cursor-pointer animation-hover inline-block relative
-        ${
-          activeLink === item.id
-            ? "text-green1-main animation-active shadow-green1-main"
-            : "text-[#000] font-bold hover:text-green1-main"
-        }
-      `}
+    <div 
+      key={item.id} 
+      className="relative"
+      onMouseEnter={() => handleMouseEnter(item.id)}
+      onMouseLeave={handleMouseLeave}
     >
-      {item.label}
-    </LinkScroll>
+      <button
+        onClick={() => handleMainMenuClick(item)}
+        className={`px-4 py-2 mx-2 cursor-pointer animation-hover inline-block relative flex items-center gap-1
+          ${
+            activeLink === item.id || (item.hasDropdown && item.dropdownItems?.some(subItem => activeLink === subItem.id))
+              ? "text-green1-main animation-active shadow-green1-main"
+              : "text-[#000] font-bold hover:text-green1-main"
+          }
+        `}
+      >
+        {item.label}
+        {item.hasDropdown && (
+          <svg 
+            className={`w-4 h-4 ml-1 transform transition-transform duration-200 ${
+              dropdownOpen === item.id ? 'rotate-180' : ''
+            }`} 
+            fill="none" 
+            stroke="currentColor" 
+            viewBox="0 0 24 24"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          </svg>
+        )}
+      </button>
+
+      {/* Dropdown Menu */}
+      {item.hasDropdown && dropdownOpen === item.id && (
+        <div 
+          className="absolute top-full left-0 mt-1 w-48 bg-white rounded-md shadow-lg border border-gray-200 py-2 z-50"
+          onClick={(e) => e.stopPropagation()}
+        >
+          {item.dropdownItems.map((dropdownItem) => (
+            <button
+              key={dropdownItem.id}
+              onClick={() => handleClick(dropdownItem)}
+              className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition-colors duration-200 ${
+                activeLink === dropdownItem.id 
+                  ? "text-green1-main bg-green-50" 
+                  : "text-gray-700 hover:text-green1-main"
+              }`}
+            >
+              {dropdownItem.label}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
   ));
 }
 
@@ -75,18 +242,135 @@ export default function Navbar() {
   const [activeLink, setActiveLink] = useState("home");
   const [scrollActive, setScrollActive] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const pathname = usePathname();
 
+  // Set active link berdasarkan current path
   useEffect(() => {
+    if (pathname === "/") {
+      setActiveLink("home");
+    } else if (pathname === "/profil-desa") {
+      setActiveLink("about");
+    } else if (pathname === "/prasarana") {
+      setActiveLink("prasarana");
+    } else if (pathname === "/kegiatan") {
+      setActiveLink("kegiatan");
+    } else if (pathname === "/lembaga") {
+      setActiveLink("lembaga");
+    } else if (pathname === "/potensi") { // TAMBAH: handling untuk potensi-desa
+      setActiveLink("potensi-desa");
+    } else {
+      // Set berdasarkan path lainnya
+      const currentItem = menuItems.find(item => item.href === pathname);
+      if (currentItem) {
+        setActiveLink(currentItem.id);
+      }
+    }
+  }, [pathname]);
+
+  // Handle scroll untuk homepage sections
+  useEffect(() => {
+    if (pathname !== "/") return; // Hanya aktif di homepage
+
     const handleScroll = () => {
       setScrollActive(window.scrollY > 20);
+      
+      // UBAH: hapus "project" dari daftar sections
+      const sections = ["home", "about", "experience", "contact"];
+      const scrollPosition = window.scrollY;
+      const windowHeight = window.innerHeight;
+      const documentHeight = document.documentElement.scrollHeight;
+      
+      let currentSection = "home"; // Default to home
+      
+      // Jika di atas 50px dari top, anggap masih di home
+      if (scrollPosition < 50) {
+        currentSection = "home";
+      }
+      // Jika mendekati bottom halaman (dalam 200px terakhir), set ke contact
+      else if (scrollPosition + windowHeight >= documentHeight - 200) {
+        currentSection = "contact";
+      }
+      else {
+        // Cari section mana yang paling terlihat di viewport
+        let maxVisibleArea = 0;
+        
+        sections.forEach((sectionId) => {
+          const element = document.getElementById(sectionId);
+          if (element) {
+            const rect = element.getBoundingClientRect();
+            const elementTop = rect.top + scrollPosition;
+            const elementBottom = elementTop + rect.height;
+            
+            // Hitung area yang terlihat di viewport
+            const viewportTop = scrollPosition;
+            const viewportBottom = scrollPosition + windowHeight;
+            
+            const visibleTop = Math.max(elementTop, viewportTop);
+            const visibleBottom = Math.min(elementBottom, viewportBottom);
+            const visibleArea = Math.max(0, visibleBottom - visibleTop);
+            
+            // Jika section ini memiliki area terlihat terbesar, set sebagai active
+            if (visibleArea > maxVisibleArea) {
+              maxVisibleArea = visibleArea;
+              currentSection = sectionId;
+            }
+          }
+        });
+        
+        // Fallback: jika tidak ada section yang terdeteksi dengan baik,
+        // gunakan logika sederhana berdasarkan posisi scroll
+        if (maxVisibleArea === 0) {
+          const totalHeight = documentHeight - windowHeight;
+          const scrollPercentage = scrollPosition / totalHeight;
+          
+          if (scrollPercentage < 0.2) {
+            currentSection = "home";
+          } else if (scrollPercentage < 0.5) {
+            currentSection = "about";
+          } else if (scrollPercentage < 0.8) {
+            currentSection = "experience";
+          } else {
+            currentSection = "contact";
+          }
+        }
+      }
+      
+      setActiveLink(currentSection);
     };
 
-    window.addEventListener("scroll", handleScroll);
+    // Throttle scroll event untuk performance
+    let ticking = false;
+    const throttledHandleScroll = () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          handleScroll();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+
+    window.addEventListener("scroll", throttledHandleScroll, { passive: true });
+    handleScroll(); // Run once on mount
     
     return () => {
-      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("scroll", throttledHandleScroll);
     };
-  }, []);
+  }, [pathname]);
+
+  // Handle hash pada URL (untuk direct link ke section)
+  useEffect(() => {
+    if (pathname === "/" && window.location.hash) {
+      const hash = window.location.hash.replace("#", "");
+      setTimeout(() => {
+        scroller.scrollTo(hash, {
+          duration: 1000,
+          smooth: true,
+        });
+        setActiveLink(hash);
+      }, 100);
+    }
+  }, [pathname]);
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
@@ -120,7 +404,7 @@ export default function Navbar() {
       >
         <nav className="max-w-screen-xl px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 mx-auto grid grid-flow-col py-2 sm:py-3 md:py-4">
           <div className="col-start-1 col-end-2 flex items-center">
-            <div className="cursor-pointer flex gap-2 sm:gap-3 md:gap-4 items-center">
+            <Link href="/" className="cursor-pointer flex gap-2 sm:gap-3 md:gap-4 items-center">
               {/* Logo 1 */}
               <div className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 lg:w-[50px] lg:h-[50px] flex justify-center items-center rounded-[8px] overflow-hidden">
                 <Image
@@ -150,28 +434,30 @@ export default function Navbar() {
                   priority
                 />
               </div>
-            </div>
+            </Link>
           </div>
 
           {/* Desktop Menu - Show on large screens */}
-          <ul className="hidden xl:flex col-start-4 col-end-8 text-[#000] items-center">
+          <div className="hidden xl:flex col-start-4 col-end-8 text-[#000] items-center">
             <CreateMenus
               setActiveLink={setActiveLink}
               activeLink={activeLink}
               getMenuItems={menuItems}
               isMobile={false}
+              currentPath={pathname}
             />
-          </ul>
+          </div>
 
           {/* Tablet Menu - Show on medium to large screens */}
-          <ul className="hidden lg:flex xl:hidden col-start-3 col-end-9 text-[#000] items-center justify-center">
+          <div className="hidden lg:flex xl:hidden col-start-3 col-end-9 text-[#000] items-center justify-center">
             <CreateMenus
               setActiveLink={setActiveLink}
               activeLink={activeLink}
               getMenuItems={menuItems}
               isMobile={false}
+              currentPath={pathname}
             />
-          </ul>
+          </div>
 
           {/* Mobile Hamburger Menu Button - Hide on large screens */}
           <div className="col-start-10 col-end-12 font-medium flex justify-end items-center lg:hidden">
@@ -217,7 +503,7 @@ export default function Navbar() {
                 </svg>
               </button>
             </div>
-            <nav className="py-4">
+            <nav className="py-4 overflow-y-auto">
               <ul className="flex flex-col">
                 <CreateMenus
                   setActiveLink={setActiveLink}
@@ -225,6 +511,7 @@ export default function Navbar() {
                   getMenuItems={menuItems}
                   isMobile={true}
                   closeMobileMenu={closeMobileMenu}
+                  currentPath={pathname}
                 />
               </ul>
             </nav>

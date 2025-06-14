@@ -1,0 +1,68 @@
+{
+  "potensi": [
+    {
+      "id": 1,
+      "nama": "Air Terjun Sumber Mulyo",
+      "kategori": "Wisata",
+      "deskripsi": "Air terjun alami dengan pemandangan indah, dikelilingi hutan hijau, cocok untuk wisata keluarga dan fotografi.",
+      "foto": "/images/wisata/air-terjun-sumber-mulyo.jpg",
+      "tahun_mulai": 2018
+    },
+    {
+      "id": 2,
+      "nama": "Kebun Sawit Makmur",
+      "kategori": "Pertanian",
+      "deskripsi": "Perkebunan kelapa sawit yang dikelola secara modern dengan hasil panen berkualitas tinggi.",
+      "foto": "/images/pertanian/kebun-sawit-makmur.jpg",
+      "tahun_mulai": 2015
+    },
+    {
+      "id": 3,
+      "nama": "Farma Kambing Etawa",
+      "kategori": "Peternakan",
+      "deskripsi": "Peternakan kambing etawa yang menghasilkan susu berkualitas dan bibit unggul untuk peternak lokal.",
+      "foto": "/images/peternakan/farma-kambing-etawa.jpg",
+      "tahun_mulai": 2020
+    },
+    {
+      "id": 4,
+      "nama": "Kerajinan Anyaman Bambu",
+      "kategori": "UMKM",
+      "deskripsi": "Usaha mikro yang memproduksi kerajinan anyaman bambu seperti keranjang dan tikar, dipasarkan hingga luar daerah.",
+      "foto": "/images/umkm/anyaman-bambu.jpg",
+      "tahun_mulai": 2017
+    },
+    {
+      "id": 5,
+      "nama": "Bukit Cinta Sumbersawit",
+      "kategori": "Wisata",
+      "deskripsi": "Bukit dengan panorama matahari terbenam yang memukau, dilengkapi spot foto Instagramable.",
+      "foto": "/images/wisata/bukit-cinta.jpg",
+      "tahun_mulai": 2019
+    },
+    {
+      "id": 6,
+      "nama": "Padi Organik Sawit Jaya",
+      "kategori": "Pertanian",
+      "deskripsi": "Budidaya padi organik dengan sistem pertanian ramah lingkungan, menghasilkan beras sehat.",
+      "foto": "/images/pertanian/padi-organik.jpg",
+      "tahun_mulai": 2021
+    },
+    {
+      "id": 7,
+      "nama": "Ternak Ayam Kampung",
+      "kategori": "Peternakan",
+      "deskripsi": "Peternakan ayam kampung dengan sistem kandang terbuka, menyediakan telur dan daging berkualitas.",
+      "foto": "/images/peternakan/ayam-kampung.jpg",
+      "tahun_mulai": 2016
+    },
+    {
+      "id": 8,
+      "nama": "Kue Tradisional Mbok Sari",
+      "kategori": "UMKM",
+      "deskripsi": "Usaha pembuatan kue tradisional seperti klepon dan getuk, populer di pasar lokal dan acara adat.",
+      "foto": "/images/umkm/kue-tradisional.jpg",
+      "tahun_mulai": 2014
+    }
+  ]
+}

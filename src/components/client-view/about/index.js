@@ -2,6 +2,11 @@
 
 import { useMemo } from "react";
 import { motion } from "framer-motion";
+import { Book } from "lucide-react";
+import Image from "next/image";
+import desaImage from "../../../assets/image 2.png";
+import Link from 'next/link';
+
 
 // Mock AnimationWrapper component
 function AnimationWrapper({ children, className }) {
@@ -47,146 +52,190 @@ export default function ClientAboutView({ data = {} }) {
 
   const setVariants = useMemo(() => variants(), []);
 
-  const aboutDataInfo = [
-    {
-      label: "Client",
-      value: data?.noofclients || "50",
-    },
-    {
-      label: "Projects",
-      value: data?.noofprojects || "100",
-    },
-    {
-      label: "Experience",
-      value: data?.yearofexperience || "5",
-    },
-  ];
-
-  // Statistics data for the top section
+  // Statistics data matching the image design
   const statisticsData = [
-    { number: "3000+", label: "Warga Desa", icon: "👥" },
-    { number: "25", label: "Program KKN", icon: "📚" },
-    { number: "15", label: "UMKM Aktif", icon: "🏪" },
-    { number: "98%", label: "Kepuasan", icon: "⭐" }
+    { 
+      number: "3000+", 
+      label: "Warga Desa", 
+      icon: "👥",
+      
+     
+    },
+    { 
+      number: "25", 
+      label: "Program KKN", 
+      icon: "📚",
+     
+    },
+    { 
+      number: "15", 
+      label: "UMKM Aktif", 
+      icon: "🏪",
+     
+    },
+    { 
+      number: "98%", 
+      label: "Kepuasan", 
+      icon: "⭐",
+      
+    }
   ];
-
-  const headingText = "Why Hire Me For Your Next Project ?";
 
   return (
-    <div className="max-w-screen-xl mt-24 mb-6 sm:mt-14 sm:mb-14 px-6 sm:px-8 lg:px-16 mx-auto" id="about">
-      
-      {/* Statistics Section - Now properly implemented */}
-      <motion.div
-        initial={{ opacity: 0, y: 50 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, delay: 0.2 }}
-        className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12 pt-8"
-      >
-        {statisticsData.map((stat, index) => (
-          <motion.div
-            key={index}
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.4 + index * 0.1 }}
-            className="text-center p-6 bg-white/50 backdrop-blur-sm rounded-xl border border-gray-200/50 hover:shadow-lg transition-all duration-300 hover:scale-105"
-          >
-            <div className="text-3xl mb-2">{stat.icon}</div>
-            <div className="text-2xl lg:text-3xl font-bold text-gray-800 mb-1">
-              {stat.number}
-            </div>
-            <div className="text-gray-600 font-medium text-sm">
-              {stat.label}
-            </div>
-          </motion.div>
-        ))}
-      </motion.div>
+    <div className="min-h-screen bg-gradient-to-br from-slate-100 via-blue-100 to-indigo-200 py-24 relative overflow-hidden">
+      {/* Background Animation Elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <motion.div
+          className="absolute top-20 left-10 w-32 h-32 bg-blue-200/30 rounded-full blur-xl"
+          animate={{
+            x: [0, 50, 0],
+            y: [0, -30, 0],
+          }}
+          transition={{
+            duration: 6,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+        />
+        <motion.div
+          className="absolute top-40 right-20 w-24 h-24 bg-purple-200/30 rounded-full blur-xl"
+          animate={{
+            x: [0, -40, 0],
+            y: [0, 40, 0],
+          }}
+          transition={{
+            duration: 8,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 1,
+          }}
+        />
+        <motion.div
+          className="absolute bottom-20 left-1/4 w-40 h-40 bg-indigo-200/20 rounded-full blur-2xl"
+          animate={{
+            scale: [1, 1.2, 1],
+            opacity: [0.3, 0.5, 0.3],
+          }}
+          transition={{
+            duration: 10,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 2,
+          }}
+        />
+      </div>
 
-      {/* Main About Section */}
-      <div className="w-full flex flex-col">
-        {/* About Info Cards */}
-        <AnimationWrapper className="rounded-lg w-full grid-flow-row grid grid-cols-1 sm:grid-cols-3 py-9 divide-y-2 sm:divide-y-0 sm:divide-x-2 divide-green-500 bg-white-500 z-10 mb-8">
-          {aboutDataInfo.map((infoItem, index) => (
+      <div className="max-w-screen-xl mx-auto px-6 sm:px-8 lg:px-16 relative z-10" id="about">
+        
+        {/* Statistics Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 50 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.2 }}
+          className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-16 "
+        >
+          {statisticsData.map((stat, index) => (
             <motion.div
-              className={`flex items-center justify-start
-                ${
-                  index === 0
-                    ? "sm:justify-start"
-                    : index === 1
-                    ? "sm:justify-center"
-                    : "sm:justify-end"
-                } py-4 sm:py-6 w-8/12 px-4 sm:w-auto mx-auto sm:mx-0
-                `}
               key={index}
-              custom={{ duration: 2 + index }}
-              variants={setVariants}
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.4 + index * 0.1 }}
+              className={`${stat.bgColor} rounded-2xl p-6 shadow-lg backdrop-blur-sm hover:shadow-xl transition-all duration-300 hover:scale-105 relative overflow-hidden flex flex-col items-center justify-center text-center`}
             >
-              <div className="flex m-0 w-40 sm:w-auto">
-                <div className="flex flex-col">
-                  <p className="text-[50px] text-green-500 font-bold">
-                    {infoItem.value}+
-                  </p>
-                  <p className="text-[25px] font-bold text-black">
-                    {infoItem.label}
-                  </p>
-                </div>
+              <div className={`${stat.iconBg} w-12 h-12 rounded-xl flex items-center justify-center mb-4`}>
+                <span className="text-xl">{stat.icon}</span>
+              </div>
+              <div className={`text-2xl lg:text-3xl font-bold ${stat.textColor} mb-1`}>
+                {stat.number}
+              </div>
+              <div className="text-gray-600 font-medium text-sm">
+                {stat.label}
               </div>
             </motion.div>
           ))}
-        </AnimationWrapper>
+        </motion.div>
 
-        {/* Heading Section */}
-        <AnimationWrapper className="pt-6">
-          <div className="flex flex-col justify-center items-center row-start-2 sm:row-start-1">
-            <h1 className="leading-[70px] mb-4 text-3xl lg:text-4xl xl:text-5xl font-medium text-center">
-              {headingText.split(" ").map((item, index) => (
-                <span
-                  key={index}
-                  className={`${index === 6 ? "text-green-500" : "text-black"}`}
+        {/* Main Content Section - Changed order for responsive */}
+        <div className="grid grid-cols-1 lg:grid-cols-2  items-start">
+          
+          {/* Right Content - Map Section (Now first on mobile) */}
+          <AnimationWrapper className="relative lg:order-2">
+            <motion.div variants={setVariants} className="relative">
+              {/* Map Container */}
+              <div className="bg-gradient-to-br from-slate-80/80 to-blue-80/80 backdrop-blur-md rounded-2xl  relative overflow-hidden shadow-x5">
+                {/* Map Image with Animation */}
+                <motion.div 
+                  className="relative mt-12 w-full h-80 rounded-xl overflow-hidden pt-6"
+                  initial={{ scale: 0.9, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ duration: 0.8, delay: 0.3 }}
+                  whileHover={{ scale: 1.02 }}
                 >
-                  {item}{" "}
-                </span>
-              ))}
-            </h1>
-            <p className="text-black mt-4 mb-8 font-bold text-center max-w-2xl">
-              {data?.aboutme || "I am a passionate developer with years of experience creating amazing digital solutions. I specialize in modern web technologies and love turning ideas into reality."}
-            </p>
-          </div>
-        </AnimationWrapper>
-
-        {/* Content Grid */}
-        <div className="grid grid-flow-row sm:grid-flow-col grid-cols-1 sm:grid-cols-2 gap-8">
-          {/* Image Section */}
-          <AnimationWrapper className="flex w-full">
-            <motion.div variants={setVariants} className="h-full w-full p-4">
-              <div className="w-full h-96 bg-gradient-to-br from-green-400 to-blue-500 rounded-lg flex items-center justify-center">
-                <div className="text-white text-center">
-                  <div className="text-6xl mb-4">👨‍💻</div>
-                  <p className="text-xl font-semibold">About Me Image</p>
-                </div>
+                  <motion.div
+                    animate={{
+                      y: [0, -10, 0],
+                    }}
+                    transition={{
+                      duration: 4,
+                      repeat: Infinity,
+                      ease: "easeInOut",
+                    }}
+                  >
+                    <Image
+                      src={desaImage}
+                      alt="Peta Desa Sumbersawit"
+                      width={600}
+                      height={500}
+                      className="object-cover block mx-auto rounded-xl"
+                      sizes="(max-width: 768px) 100vw, 50vw"
+                      priority
+                    />
+                  </motion.div>
+                  
+                  {/* Overlay for better text visibility */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent rounded-xl"></div>
+                  
+                </motion.div>
+                
+                {/* Title Badge */}
+                <motion.div 
+                  className="absolute top-4 right-4 bg-gradient-to-r from-orange-100/90 to-orange-50/90 backdrop-blur-sm text-orange-700 px-4 py-2 rounded-full text-sm font-semibold shadow-md"
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.6, delay: 0.5 }}
+                >
+                  Kecamatan Sidorejo
+                </motion.div>
               </div>
             </motion.div>
           </AnimationWrapper>
 
-          {/* Skills Section */}
-          <AnimationWrapper className="flex items-center w-full p-4">
-            <motion.div
-              variants={setVariants}
-              className="grid gap-4 grid-cols-2 lg:grid-cols-3 h-full w-full"
-            >
-              {(data?.skills || "React,JavaScript,Node.js,Python,MongoDB,PostgreSQL").split(",").map((skill, index) => (
-                <motion.div
-                  key={index}
-                  className="w-full flex justify-center items-center"
-                  variants={skillItemVariant}
-                  initial="hidden"
-                  whileInView="visible"
-                  transition={{ delay: index * 0.1 }}
+          {/* Left Content - Text Description (Now second on mobile) */}
+          <AnimationWrapper className="space-y-6 lg:order-1">
+            <motion.div variants={setVariants} className="space-y-6">
+              <div className="space-y-4">
+                <p className="text-gray-800 leading-relaxed text-justify">
+                  Selama dua tahun menjadi Staff Jaringan Eksternal BEM KM SV UGM, saya menimba kerja sama strategis dengan berbagai instansi eksternal melalui koordinasi, negosiasi, dan komunikasi yang efektif. Pengalaman ini menjadi sarana penguatan kemampuan interpersonal sekaligus pengamalan nilai-nilai Pancasila, khususnya sila keempat dan kelima, melalui semangat musyawarah, gotong royong, dan keadilan dalam membangun kolaborasi.
+                </p>
+                
+                <p className="text-gray-800 leading-relaxed text-justify">
+                  Selama dua tahun menjadi Staff Jaringan Eksternal BEM KM SV UGM, saya menjalani kerja sama strategis dengan berbagai instansi eksternal melalui koordinasi, negosiasi, dan komunikasi yang efektif. Pengalaman ini menjadi sarana penguatan kemampuan interpersonal sekaligus pengamalan nilai-nilai Pancasila.
+                </p>
+              </div>
+              <br>
+              </br>
+              
+              <Link href="/sejarah" className="pt-4">
+                <motion.button
+                  className="bg-gradient-to-r from-green-main to-green-500 text-white-500 font-semibold py-3 px-8 rounded-full transition-all duration-300 shadow-lg transform hover:scale-105 hover:shadow-xl active:scale-95 flex items-center gap-2"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
                 >
-                  <button className="whitespace-nowrap text-ellipsis overflow-hidden py-3 px-4 w-full border-2 border-green-500 bg-white text-black font-semibold rounded-lg text-sm lg:text-base tracking-wide hover:shadow-lg hover:shadow-green-500/25 transition-all outline-none hover:scale-105">
-                    {skill.trim()}
-                  </button>
-                </motion.div>
-              ))}
+                  <Book size={20} className="text-white-500" />
+                  Baca Profil Desa
+                </motion.button>
+              </Link>            
+            
             </motion.div>
           </AnimationWrapper>
         </div>

@@ -1,3 +1,4 @@
+// api/project/get/route.js
 import connectToDB from "@/database";
 import Project from "@/models/Project";
 import { NextResponse } from "next/server";
@@ -7,7 +8,7 @@ export const dynamic = "force-dynamic";
 export async function GET(req) {
   try {
     await connectToDB();
-    const extractData = await Project.find({});
+    const extractData = await Project.find({}).sort({ createdAt: -1 }); // Sort by newest first
 
     if (extractData) {
       return NextResponse.json({
@@ -17,15 +18,16 @@ export async function GET(req) {
     } else {
       return NextResponse.json({
         success: false,
-        message: "Something went wrong !Please try again",
+        message: "No projects found",
       });
     }
   } catch (e) {
-    console.log(e);
+    console.log("Error:", e);
 
     return NextResponse.json({
       success: false,
-      message: "Something went wrong !Please try again",
+      message: "Something went wrong! Please try again",
+      error: e.message
     });
   }
 }

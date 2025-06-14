@@ -1,0 +1,52 @@
+{
+  "kegiatan": [
+    {
+      "id": 1,
+      "nama": "Kerja Bakti Bulanan",
+      "kategori": "Sosial",
+      "deskripsi": "Kegiatan gotong royong membersihkan lingkungan desa setiap akhir bulan.",
+      "tahun": 2025,
+      "foto": "/images/kerja_bakti.jpg"
+    },
+    {
+      "id": 2,
+      "nama": "Pengajian Rutin",
+      "kategori": "Keagamaan",
+      "deskripsi": "Pengajian mingguan di masjid desa untuk mempererat ukhuwah Islamiyah.",
+      "tahun": 2025,
+      "foto": "/images/pengajian.jpg"
+    },
+    {
+      "id": 3,
+      "nama": "Pelatihan UMKM",
+      "kategori": "Ekonomi",
+      "deskripsi": "Workshop untuk meningkatkan keterampilan wirausaha masyarakat desa.",
+      "tahun": 2025,
+      "foto": "/images/pelatihan_umkm.jpg"
+    },
+    {
+      "id": 4,
+      "nama": "Festival Desa Sumbersawit",
+      "kategori": "Budaya",
+      "deskripsi": "Acara tahunan yang menampilkan seni budaya dan produk lokal desa.",
+      "tahun": 2025,
+      "foto": "/images/festival_desa.jpg"
+    },
+    {
+      "id": 5,
+      "nama": "Lomba Antar Dusun",
+      "kategori": "Olahraga",
+      "deskripsi": "Kompetisi olahraga dan seni antar dusun untuk mempererat kebersamaan.",
+      "tahun": 2025,
+      "foto": "/images/lomba_dusun.jpg"
+    },
+    {
+      "id": 6,
+      "nama": "Posyandu Balita",
+      "kategori": "Kesehatan",
+      "deskripsi": "Kegiatan rutin untuk pemantauan kesehatan balita dan ibu hamil.",
+      "tahun": 2025,
+      "foto": "/images/posyandu.jpg"
+    }
+  ]
+}

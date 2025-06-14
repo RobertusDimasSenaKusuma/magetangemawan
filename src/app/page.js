@@ -4,6 +4,7 @@ import ClientExperienceAndEducationView from "@/components/client-view/experienc
 import ClientHomeView from "@/components/client-view/home";
 import ClientProjectView from "@/components/client-view/project";
 
+
 async function extractAllDatas(currentSection) {
   try {
     // Menggunakan URL absolut untuk production atau relatif untuk development

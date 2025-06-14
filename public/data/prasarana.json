@@ -1,0 +1,95 @@
+
+{
+  "prasarana": [
+    {
+      "id": 1,
+      "nama": "Jalan Beraspal Utama",
+      "kategori": "Transportasi",
+      "deskripsi": "Jalan utama desa yang telah diaspal dengan kondisi baik, menghubungkan ke jalan kabupaten",
+      "foto": "https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=400&h=300&fit=crop",
+      "tahun_pembangunan": "2020",
+      "kondisi": "Baik"
+    },
+    {
+      "id": 2,
+      "nama": "Balai Desa Sumbersawit",
+      "kategori": "Pemerintahan",
+      "deskripsi": "Gedung balai desa sebagai pusat kegiatan pemerintahan dan kemasyarakatan",
+      "foto": "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=400&h=300&fit=crop",
+      "tahun_pembangunan": "2019",
+      "kondisi": "Baik"
+    },
+    {
+      "id": 3,
+      "nama": "Fasilitas Air Bersih",
+      "kategori": "Sanitasi",
+      "deskripsi": "Sistem penyediaan air bersih dengan pompa dan tandon untuk seluruh warga desa",
+      "foto": "https://images.unsplash.com/photo-1582719471137-c3967ffb1c42?w=400&h=300&fit=crop",
+      "tahun_pembangunan": "2021",
+      "kondisi": "Baik"
+    },
+    {
+      "id": 4,
+      "nama": "Jaringan Listrik PLN",
+      "kategori": "Energi",
+      "deskripsi": "Jaringan listrik PLN yang stabil melayani 100% rumah tangga di desa",
+      "foto": "data/images/prasarana/voli.jpg",
+      "tahun_pembangunan": "2018",
+      "kondisi": "Baik"
+    },
+    {
+      "id": 5,
+      "nama": "SD Negeri Sumbersawit",
+      "kategori": "Pendidikan",
+      "deskripsi": "Sekolah Dasar Negeri dengan 6 ruang kelas dan fasilitas pembelajaran lengkap",
+      "foto": "https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=400&h=300&fit=crop",
+      "tahun_pembangunan": "2017",
+      "kondisi": "Baik"
+    },
+    {
+      "id": 6,
+      "nama": "Posyandu Melati",
+      "kategori": "Kesehatan",
+      "deskripsi": "Pos Pelayanan Terpadu untuk layanan kesehatan ibu dan anak",
+      "foto": "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=400&h=300&fit=crop",
+      "tahun_pembangunan": "2020",
+      "kondisi": "Baik"
+    },
+    {
+      "id": 7,
+      "nama": "Jembatan Sungai Desa",
+      "kategori": "Transportasi",
+      "deskripsi": "Jembatan beton yang menghubungkan dua area desa melalui sungai kecil",
+      "foto": "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop",
+      "tahun_pembangunan": "2019",
+      "kondisi": "Baik"
+    },
+    {
+      "id": 8,
+      "nama": "Pasar Desa",
+      "kategori": "Ekonomi",
+      "deskripsi": "Pasar tradisional desa untuk aktivitas jual beli hasil pertanian dan kebutuhan sehari-hari",
+      "foto": "https://images.unsplash.com/photo-1567306226416-28f0efdc88ce?w=400&h=300&fit=crop",
+      "tahun_pembangunan": "2018",
+      "kondisi": "Baik"
+    },
+    {
+      "id": 9,
+      "nama": "Masjid Al-Hidayah",
+      "kategori": "Ibadah",
+      "deskripsi": "Masjid desa sebagai tempat ibadah dan kegiatan keagamaan masyarakat",
+      "foto": "https://images.unsplash.com/photo-1564769662533-4f00a87b4056?w=400&h=300&fit=crop",
+      "tahun_pembangunan": "2016",
+      "kondisi": "Baik"
+    },
+    {
+      "id": 10,
+      "nama": "Lapangan Olahraga",
+      "kategori": "Olahraga",
+      "deskripsi": "Lapangan serbaguna untuk kegiatan olahraga dan acara desa",
+      "foto": "https://images.unsplash.com/photo-1575361204480-aadea25e6e68?w=400&h=300&fit=crop",
+      "tahun_pembangunan": "2021",
+      "kondisi": "Baik"
+    }
+  ]
+}
