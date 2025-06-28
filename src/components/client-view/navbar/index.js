@@ -5,15 +5,15 @@ import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import Image from "next/image";
 import logo1 from "../../../assets/logo1.jpg";
-import logo2 from "../../../assets/logo2.jpg";
+import logo2 from "../../../assets/logo_kkn.jpg";
 import logo3 from "../../../assets/logo3.jpg";
 
 const menuItems = [
   {
     id: "home",
     label: "Beranda",
-    isPage: true,
-    href: "/",
+    isPage: false,
+  
   },
   {
     id: "about",
@@ -48,20 +48,15 @@ const menuItems = [
   },
   {
     id: "experience",
-    label: "Experience",
+    label: "Potensi Desa",
     isPage: false, // section scroll di homepage
   },
   {
-    id: "potensi",
-    label: "Potensi Desa",
-    isPage: true, // UBAH: dari false ke true agar bisa pindah halaman
-    href: "/potensi", // TAMBAH: tambahkan href untuk navigasi
-  },
-  { 
-    id: "contact",
-    label: "Contact",
+    id: "project",
+    label: "Artikel / Berita",
     isPage: false, // section scroll di homepage
-  },
+ },
+ 
 ];
 
 function CreateMenus({ activeLink, getMenuItems, setActiveLink, isMobile = false, closeMobileMenu, currentPath }) {
@@ -80,6 +75,7 @@ function CreateMenus({ activeLink, getMenuItems, setActiveLink, isMobile = false
         scroller.scrollTo(item.id, {
           duration: 1000,
           smooth: true,
+          offset: -80, // Offset untuk navbar fixed
         });
         setActiveLink(item.id);
       } else {
@@ -216,7 +212,7 @@ function CreateMenus({ activeLink, getMenuItems, setActiveLink, isMobile = false
       {/* Dropdown Menu */}
       {item.hasDropdown && dropdownOpen === item.id && (
         <div 
-          className="absolute top-full left-0 mt-1 w-48 bg-white rounded-md shadow-lg border border-gray-200 py-2 z-50"
+          className="absolute top-full left-0 mt-1 w-48 bg-white-500 rounded-md shadow-lg border border-gray-200 py-2 z-50"
           onClick={(e) => e.stopPropagation()}
         >
           {item.dropdownItems.map((dropdownItem) => (
@@ -256,8 +252,8 @@ export default function Navbar() {
       setActiveLink("kegiatan");
     } else if (pathname === "/lembaga") {
       setActiveLink("lembaga");
-    } else if (pathname === "/potensi") { // TAMBAH: handling untuk potensi-desa
-      setActiveLink("potensi-desa");
+    } else if (pathname === "/potensi") {
+      setActiveLink("potensi");
     } else {
       // Set berdasarkan path lainnya
       const currentItem = menuItems.find(item => item.href === pathname);
@@ -274,65 +270,42 @@ export default function Navbar() {
     const handleScroll = () => {
       setScrollActive(window.scrollY > 20);
       
-      // UBAH: hapus "project" dari daftar sections
-      const sections = ["home", "about", "experience", "contact"];
+      // PERBAIKAN: Tambahkan "project" ke dalam array sections
+      const sections = ["home", "about", "experience", "project"];
       const scrollPosition = window.scrollY;
       const windowHeight = window.innerHeight;
       const documentHeight = document.documentElement.scrollHeight;
       
       let currentSection = "home"; // Default to home
       
-      // Jika di atas 50px dari top, anggap masih di home
-      if (scrollPosition < 50) {
+      // Jika di atas 100px dari top, anggap masih di home
+      if (scrollPosition < 100) {
         currentSection = "home";
       }
-      // Jika mendekati bottom halaman (dalam 200px terakhir), set ke contact
-      else if (scrollPosition + windowHeight >= documentHeight - 200) {
-        currentSection = "contact";
-      }
+  
       else {
-        // Cari section mana yang paling terlihat di viewport
-        let maxVisibleArea = 0;
+        // Cari section mana yang paling dekat dengan tengah viewport
+        let closestSection = "home";
+        let closestDistance = Infinity;
         
         sections.forEach((sectionId) => {
           const element = document.getElementById(sectionId);
           if (element) {
             const rect = element.getBoundingClientRect();
-            const elementTop = rect.top + scrollPosition;
-            const elementBottom = elementTop + rect.height;
+            // Hitung jarak dari center element ke center viewport
+            const elementCenter = rect.top + rect.height / 2;
+            const viewportCenter = windowHeight / 2;
+            const distance = Math.abs(elementCenter - viewportCenter);
             
-            // Hitung area yang terlihat di viewport
-            const viewportTop = scrollPosition;
-            const viewportBottom = scrollPosition + windowHeight;
-            
-            const visibleTop = Math.max(elementTop, viewportTop);
-            const visibleBottom = Math.min(elementBottom, viewportBottom);
-            const visibleArea = Math.max(0, visibleBottom - visibleTop);
-            
-            // Jika section ini memiliki area terlihat terbesar, set sebagai active
-            if (visibleArea > maxVisibleArea) {
-              maxVisibleArea = visibleArea;
-              currentSection = sectionId;
+            // Jika element visible dan lebih dekat ke center
+            if (rect.top < windowHeight && rect.bottom > 0 && distance < closestDistance) {
+              closestDistance = distance;
+              closestSection = sectionId;
             }
           }
         });
         
-        // Fallback: jika tidak ada section yang terdeteksi dengan baik,
-        // gunakan logika sederhana berdasarkan posisi scroll
-        if (maxVisibleArea === 0) {
-          const totalHeight = documentHeight - windowHeight;
-          const scrollPercentage = scrollPosition / totalHeight;
-          
-          if (scrollPercentage < 0.2) {
-            currentSection = "home";
-          } else if (scrollPercentage < 0.5) {
-            currentSection = "about";
-          } else if (scrollPercentage < 0.8) {
-            currentSection = "experience";
-          } else {
-            currentSection = "contact";
-          }
-        }
+        currentSection = closestSection;
       }
       
       setActiveLink(currentSection);
@@ -366,6 +339,7 @@ export default function Navbar() {
         scroller.scrollTo(hash, {
           duration: 1000,
           smooth: true,
+          offset: -80, // Offset untuk navbar fixed
         });
         setActiveLink(hash);
       }, 100);

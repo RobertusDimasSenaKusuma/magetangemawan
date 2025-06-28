@@ -1,3 +1,5 @@
+const { orange } = require('@mui/material/colors')
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
@@ -29,6 +31,12 @@ module.exports = {
       orange: {
         100: "#FFECEC",
         500: "#F53855",
+        300: "#FF0000"
+      },blue: {
+        500: "#3B5998",
+      },
+      pink: {
+        500: "#C13584",
       },
       green: {
         500: "#2FAB73",

@@ -171,13 +171,13 @@ export default function ClientHomeView({ data }) {
               >
                 <button 
                   onClick={handleJelajahiDesa}
-                  className="px-6 py-3 sm:px-8 sm:py-4 md:px-6 md:py-3 lg:px-8 lg:py-4 bg-white text-green-700 font-semibold rounded-xl border-2 border-green-200 hover:bg-green-50 hover:border-green-300 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl text-sm sm:text-base md:text-sm lg:text-base cursor-pointer"
+                  className="px-6 py-3 sm:px-8 sm:py-4 md:px-6 md:py-3 lg:px-8 lg:py-4 bg-green1-500 text-white-500 font-semibold rounded-xl border-2 border-green1-500 hover:bg-green-50 hover:border-green-300 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl text-sm sm:text-base md:text-sm lg:text-base cursor-pointer"
                 >
                   Jelajahi Desa
                 </button>
                 <button 
                   onClick={handlePlayProfilDesa}
-                  className="px-6 py-3 sm:px-8 sm:py-4 md:px-6 md:py-3 lg:px-8 lg:py-4 bg-gradient-to-r from-red-600 to-red-700 text-white font-semibold rounded-xl border-2 border-transparent hover:from-red-700 hover:to-red-800 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center gap-2 sm:gap-3 md:gap-2 lg:gap-3 text-sm sm:text-base md:text-sm lg:text-base cursor-pointer"
+                  className="px-6 py-3 sm:px-8 sm:py-4 md:px-6 md:py-3 lg:px-8 lg:py-4 bg-orange-500 text-white-500 font-semibold rounded-xl border-2 border-transparent hover:from-red-700 hover:to-red-800 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center gap-2 sm:gap-3 md:gap-2 lg:gap-3 text-sm sm:text-base md:text-sm lg:text-base cursor-pointer"
                 >
                   <FaPlay className="w-3 h-3 sm:w-4 sm:h-4 md:w-3 md:h-3 lg:w-4 lg:h-4" />
                   Play Profil Desa

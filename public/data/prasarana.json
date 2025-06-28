@@ -1,95 +1,124 @@
-
 {
   "prasarana": [
     {
       "id": 1,
       "nama": "Jalan Beraspal Utama",
       "kategori": "Transportasi",
-      "deskripsi": "Jalan utama desa yang telah diaspal dengan kondisi baik, menghubungkan ke jalan kabupaten",
+      "deskripsi": "Jalan utama desa yang telah diaspal dengan kondisi baik, menghubungkan ke jalan kabupaten. Jalan ini memiliki lebar 6 meter dengan drainase yang baik di kedua sisi. Dilengkapi dengan rambu-rambu lalu lintas dan penerangan jalan yang memadai untuk keamanan pengguna jalan pada malam hari.",
       "foto": "https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=400&h=300&fit=crop",
       "tahun_pembangunan": "2020",
-      "kondisi": "Baik"
+      "kondisi": "Baik",
+      "maps_link": "https://maps.google.com/?q=Jalan+Utama+Desa+Sumbersawit",
+      "lokasi": "Sepanjang jalan utama desa dari timur ke barat",
+      "spesifikasi": "Panjang: 2.5 km, Lebar: 6 meter, Material: Aspal hotmix"
     },
     {
       "id": 2,
       "nama": "Balai Desa Sumbersawit",
       "kategori": "Pemerintahan",
-      "deskripsi": "Gedung balai desa sebagai pusat kegiatan pemerintahan dan kemasyarakatan",
+      "deskripsi": "Gedung balai desa sebagai pusat kegiatan pemerintahan dan kemasyarakatan. Bangunan berlantai dua ini dilengkapi dengan ruang kepala desa, ruang pelayanan administrasi, aula serbaguna, dan ruang rapat. Fasilitas ini menjadi pusat koordinasi seluruh kegiatan pemerintahan desa serta tempat pelayanan masyarakat.",
       "foto": "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=400&h=300&fit=crop",
       "tahun_pembangunan": "2019",
-      "kondisi": "Baik"
+      "kondisi": "Baik",
+      "maps_link": "https://maps.google.com/?q=Balai+Desa+Sumbersawit",
+      "lokasi": "Jalan Raya Desa No. 1, Sumbersawit",
+      "spesifikasi": "Luas bangunan: 300 m², Lantai: 2 tingkat, Kapasitas aula: 150 orang"
     },
     {
       "id": 3,
       "nama": "Fasilitas Air Bersih",
       "kategori": "Sanitasi",
-      "deskripsi": "Sistem penyediaan air bersih dengan pompa dan tandon untuk seluruh warga desa",
+      "deskripsi": "Sistem penyediaan air bersih dengan pompa dan tandon untuk seluruh warga desa. Sistem ini menggunakan sumber air dari sumur bor dalam dengan kedalaman 80 meter. Dilengkapi dengan sistem filtrasi dan klorinasi untuk menjamin kualitas air yang aman untuk dikonsumsi masyarakat.",
       "foto": "https://images.unsplash.com/photo-1582719471137-c3967ffb1c42?w=400&h=300&fit=crop",
       "tahun_pembangunan": "2021",
-      "kondisi": "Baik"
+      "kondisi": "Baik",
+      "maps_link": "https://maps.google.com/?q=Instalasi+Air+Bersih+Sumbersawit",
+      "lokasi": "Area tengah desa, dekat dengan balai desa",
+      "spesifikasi": "Kapasitas tandon: 50.000 liter, Kedalaman sumur: 80 meter, Jangkauan: 500 KK"
     },
     {
       "id": 4,
       "nama": "Jaringan Listrik PLN",
       "kategori": "Energi",
-      "deskripsi": "Jaringan listrik PLN yang stabil melayani 100% rumah tangga di desa",
-      "foto": "data/images/prasarana/voli.jpg",
+      "deskripsi": "Jaringan listrik PLN yang stabil melayani 100% rumah tangga di desa. Infrastruktur kelistrikan ini menggunakan sistem distribusi tegangan menengah 20 kV yang diturunkan menjadi 220V/380V untuk keperluan rumah tangga dan usaha. Dilengkapi dengan sistem proteksi dan gardu distribusi yang memadai.",
+      "foto": "https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?w=400&h=300&fit=crop",
       "tahun_pembangunan": "2018",
-      "kondisi": "Baik"
+      "kondisi": "Baik",
+      "maps_link": "https://maps.google.com/?q=Gardu+Listrik+PLN+Sumbersawit",
+      "lokasi": "Tersebar di seluruh wilayah desa dengan 3 gardu distribusi utama",
+      "spesifikasi": "Tegangan: 20kV/380V/220V, Cakupan: 100% rumah tangga, Kapasitas: 500 kVA"
     },
     {
       "id": 5,
       "nama": "SD Negeri Sumbersawit",
       "kategori": "Pendidikan",
-      "deskripsi": "Sekolah Dasar Negeri dengan 6 ruang kelas dan fasilitas pembelajaran lengkap",
+      "deskripsi": "Sekolah Dasar Negeri dengan 6 ruang kelas dan fasilitas pembelajaran lengkap. Sekolah ini melayani sekitar 180 siswa dari kelas 1 hingga 6. Dilengkapi dengan perpustakaan, laboratorium komputer sederhana, ruang guru, dan lapangan bermain. Fasilitas pendukung lainnya termasuk kantin sekolah dan toilet yang bersih.",
       "foto": "https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=400&h=300&fit=crop",
       "tahun_pembangunan": "2017",
-      "kondisi": "Baik"
+      "kondisi": "Baik",
+      "maps_link": "https://maps.google.com/?q=SD+Negeri+Sumbersawit",
+      "lokasi": "Jalan Pendidikan No. 15, Sumbersawit",
+      "spesifikasi": "Jumlah ruang kelas: 6, Kapasitas: 180 siswa, Luas area: 2.500 m²"
     },
     {
       "id": 6,
       "nama": "Posyandu Melati",
       "kategori": "Kesehatan",
-      "deskripsi": "Pos Pelayanan Terpadu untuk layanan kesehatan ibu dan anak",
+      "deskripsi": "Pos Pelayanan Terpadu untuk layanan kesehatan ibu dan anak. Posyandu ini melayani pemeriksaan kesehatan rutin, imunisasi, pemantauan tumbuh kembang anak, dan penyuluhan kesehatan. Dikelola oleh kader kesehatan terlatih dengan dukungan dari puskesmas kecamatan dan bidan desa.",
       "foto": "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=400&h=300&fit=crop",
       "tahun_pembangunan": "2020",
-      "kondisi": "Baik"
+      "kondisi": "Baik",
+      "maps_link": "https://maps.google.com/?q=Posyandu+Melati+Sumbersawit",
+      "lokasi": "Jalan Kesehatan RT 02, Sumbersawit",
+      "spesifikasi": "Luas bangunan: 80 m², Kapasitas pelayanan: 50 balita/bulan, Kader: 8 orang"
     },
     {
       "id": 7,
       "nama": "Jembatan Sungai Desa",
       "kategori": "Transportasi",
-      "deskripsi": "Jembatan beton yang menghubungkan dua area desa melalui sungai kecil",
+      "deskripsi": "Jembatan beton yang menghubungkan dua area desa melalui sungai kecil. Jembatan ini memiliki konstruksi beton bertulang dengan panjang 25 meter dan lebar 4 meter. Dilengkapi dengan railing pengaman dan sistem drainase yang baik. Jembatan ini sangat vital untuk menghubungkan area pertanian dengan pemukiman warga.",
       "foto": "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop",
       "tahun_pembangunan": "2019",
-      "kondisi": "Baik"
+      "kondisi": "Baik",
+      "maps_link": "https://maps.google.com/?q=Jembatan+Sungai+Desa+Sumbersawit",
+      "lokasi": "Menghubungkan RT 01 dan RT 03 melalui Sungai Jernih",
+      "spesifikasi": "Panjang: 25 meter, Lebar: 4 meter, Material: Beton bertulang K-300"
     },
     {
       "id": 8,
       "nama": "Pasar Desa",
       "kategori": "Ekonomi",
-      "deskripsi": "Pasar tradisional desa untuk aktivitas jual beli hasil pertanian dan kebutuhan sehari-hari",
+      "deskripsi": "Pasar tradisional desa untuk aktivitas jual beli hasil pertanian dan kebutuhan sehari-hari. Pasar ini beroperasi setiap hari dengan aktivitas puncak pada pagi hari. Menyediakan berbagai kebutuhan pokok, hasil pertanian segar, dan produk lokal. Dilengkapi dengan area parkir, toilet, dan sistem pengelolaan sampah yang baik.",
       "foto": "https://images.unsplash.com/photo-1567306226416-28f0efdc88ce?w=400&h=300&fit=crop",
       "tahun_pembangunan": "2018",
-      "kondisi": "Baik"
+      "kondisi": "Baik",
+      "maps_link": "https://maps.google.com/?q=Pasar+Desa+Sumbersawit",
+      "lokasi": "Jalan Ekonomi Rakyat, pusat desa Sumbersawit",
+      "spesifikasi": "Jumlah kios: 24 unit, Luas area: 800 m², Jam operasional: 05.00-17.00"
     },
     {
       "id": 9,
       "nama": "Masjid Al-Hidayah",
       "kategori": "Ibadah",
-      "deskripsi": "Masjid desa sebagai tempat ibadah dan kegiatan keagamaan masyarakat",
+      "deskripsi": "Masjid desa sebagai tempat ibadah dan kegiatan keagamaan masyarakat. Masjid berkapasitas 300 jamaah ini menjadi pusat aktivitas keagamaan seperti sholat berjamaah, pengajian, dan kegiatan ramadan. Dilengkapi dengan fasilitas wudhu yang memadai, sound system, AC, dan perpustakaan islami.",
       "foto": "https://images.unsplash.com/photo-1564769662533-4f00a87b4056?w=400&h=300&fit=crop",
       "tahun_pembangunan": "2016",
-      "kondisi": "Baik"
+      "kondisi": "Baik",
+      "maps_link": "https://maps.google.com/?q=Masjid+Al+Hidayah+Sumbersawit",
+      "lokasi": "Jalan Masjid Raya No. 7, Sumbersawit",
+      "spesifikasi": "Kapasitas: 300 jamaah, Luas bangunan: 400 m², Menara setinggi: 25 meter"
     },
     {
       "id": 10,
       "nama": "Lapangan Olahraga",
       "kategori": "Olahraga",
-      "deskripsi": "Lapangan serbaguna untuk kegiatan olahraga dan acara desa",
+      "deskripsi": "Lapangan serbaguna untuk kegiatan olahraga dan acara desa. Lapangan ini dapat digunakan untuk berbagai aktivitas seperti sepak bola, voli, bulutangkis, dan senam massal. Dilengkapi dengan tribun sederhana, penerangan lapangan, dan ruang ganti. Menjadi venue utama untuk acara-acara besar desa seperti HUT RI dan festival desa.",
       "foto": "https://images.unsplash.com/photo-1575361204480-aadea25e6e68?w=400&h=300&fit=crop",
       "tahun_pembangunan": "2021",
-      "kondisi": "Baik"
+      "kondisi": "Baik",
+      "maps_link": "https://maps.google.com/?q=Lapangan+Olahraga+Sumbersawit",
+      "lokasi": "Jalan Olahraga, sebelah timur balai desa",
+      "spesifikasi": "Ukuran lapangan: 50x80 meter, Kapasitas tribun: 200 orang, Penerangan: 8 tiang lampu sorot"
     }
   ]
 }
