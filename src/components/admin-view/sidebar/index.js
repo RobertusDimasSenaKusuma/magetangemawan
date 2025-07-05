@@ -52,9 +52,9 @@ export default function AdminSidebar({
       <button
         onClick={toggleSidebar}
         className={`
-          fixed top-4 z-[60] p-4 rounded-md bg-green1-500 text-white-500 m-2
+          fixed top-4 z-[60] p-2 rounded-md bg-green1-500 text-white-500 m-2
           hover:bg-green1-500 transition-all duration-300 shadow-lg
-          ${isSidebarOpen ? 'left-[280px] md:left-[320px]' : 'left-4'}
+          ${isSidebarOpen ? 'left-[280px] md:left-[300px]' : 'left-4'}
         `}
       >
         <svg 
@@ -85,7 +85,7 @@ export default function AdminSidebar({
         className={`
           fixed left-0 top-0 h-full bg-white-500 text-white z-50 transition-all duration-300 shadow-2xl
           ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}
-          w-72 md:w-80
+          w-72 md:w-70
         `}
       >
         {/* Sidebar Header */}

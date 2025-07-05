@@ -53,7 +53,7 @@ const menuItems = [
   },
   {
     id: "project",
-    label: "Artikel / Berita",
+    label: "Artikel & Berita",
     isPage: false, // section scroll di homepage
  },
  

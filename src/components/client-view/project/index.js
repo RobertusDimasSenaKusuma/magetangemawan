@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import AnimationWrapper from "../animation-wrapper";
 import { motion, useScroll } from "framer-motion";
 import Image from "next/image";
+import Link from "next/link";
 
 export default function ClientProjectView({ data }) {
   const containerRef = useRef(null);
@@ -77,12 +78,21 @@ export default function ClientProjectView({ data }) {
                   )}
                 </div>
                 <div className="mt-4">
-                  <span className="inline-block bg-orange-500 text-white-300 text-sm font-semibold px-2 py-1 rounded-full">
-                    #{item.category || "Uncategorized"}
+                  <span className="inline-block bg-green1-500 text-white-300 text-sm font-semibold px-2 py-1 rounded-full">
+                    {item.github || "Uncategorized"}
                   </span>
                   <h3 className="mt-2 text-xl font-semibold text-black">{item.name}</h3>
-                  <p className="mt-2 text-gray-600 text-sm">{item.description || "No description available"}</p>
-                  <a href="#" className="mt-4 inline-block text-green1-500 hover:underline">Read More <span>→</span></a>
+                  <p className="mt-2 text-gray-600 text-justify">
+                  {item.technologies
+                    ? item.technologies.split('.').slice(0, 1).join('.') + (item.technologies.split('.').length > 2 ? '.' : '')
+                    : "No description available"}
+                </p>
+                  <Link 
+                    href={`/berita?id=${item._id || item.id}`} 
+                    className="mt-4 inline-block text-orange-500 hover:underline"
+                  >
+                    Baca Selengkapnya <span>→</span>
+                  </Link>
                 </div>
               </div>
             ))

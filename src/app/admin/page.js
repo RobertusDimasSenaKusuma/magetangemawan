@@ -137,16 +137,7 @@ export default function AdminView() {
                 <div>
                 </div>
               </div>
-              {/* Breadcrumb */}
-              <div className="flex items-center space-x-2 text-sm text-gray-500">
-                <span className="px-2 py-1 bg-green1-500 rounded-md">Dashboard</span>
-                <svg className="w-4 h-4" fill="black" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
-                <span className="px-2 py-1 bg-green1-500 text-indigo-700 rounded-md capitalize">
-                  {currentSelectedTab}
-                </span>
-              </div>
+              
             </div>
 
             {/* Component Content */}
