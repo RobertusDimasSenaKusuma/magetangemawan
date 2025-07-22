@@ -13,18 +13,20 @@ const menuItems = [
     id: "home",
     label: "Beranda",
     isPage: false,
-  
+    urlHash: "home", // Custom URL hash
   },
   {
     id: "about",
     label: "Tentang Desa",
-    isPage: false, // section scroll di homepage
+    isPage: false,
+    urlHash: "tentang", // Custom URL hash
     hasDropdown: true,
     dropdownItems: [
       {
         id: "about",
         label: "profil desa",
-        isPage: false, // section scroll di homepage
+        isPage: false,
+        urlHash: "tentang", // Custom URL hash
       },
       {
         id: "prasarana",
@@ -49,14 +51,15 @@ const menuItems = [
   {
     id: "experience",
     label: "Potensi Desa",
-    isPage: false, // section scroll di homepage
+    isPage: false,
+    urlHash: "potensi", // Custom URL hash
   },
   {
     id: "project",
     label: "Artikel & Berita",
-    isPage: false, // section scroll di homepage
- },
- 
+    isPage: false,
+    urlHash: "berita", // Custom URL hash
+  },
 ];
 
 function CreateMenus({ activeLink, getMenuItems, setActiveLink, isMobile = false, closeMobileMenu, currentPath }) {
@@ -79,8 +82,9 @@ function CreateMenus({ activeLink, getMenuItems, setActiveLink, isMobile = false
         });
         setActiveLink(item.id);
       } else {
-        // Redirect ke homepage lalu scroll
-        router.push(`/#${item.id}`);
+        // Redirect ke homepage dengan custom hash
+        const customHash = item.urlHash || item.id;
+        router.push(`/#${customHash}`);
         setActiveLink(item.id);
       }
     }
@@ -240,20 +244,34 @@ export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const pathname = usePathname();
 
+  // Fungsi helper untuk mencari menu item berdasarkan custom hash
+  const findMenuByHash = (hash) => {
+    const allMenuItems = [];
+    menuItems.forEach(item => {
+      allMenuItems.push(item);
+      if (item.dropdownItems) {
+        allMenuItems.push(...item.dropdownItems);
+      }
+    });
+    return allMenuItems.find(item => item.urlHash === hash || item.id === hash);
+  };
+
   // Set active link berdasarkan current path
   useEffect(() => {
     if (pathname === "/") {
       setActiveLink("home");
     } else if (pathname === "/profil-desa") {
       setActiveLink("about");
-    } else if (pathname === "/prasarana") {
+    } else if (pathname === "/prasarana" || pathname === "/detailprasarana" || pathname === "/detailkegiatan" || pathname === "/detaillembaga" || pathname === "/sejarah" ) {
       setActiveLink("prasarana");
     } else if (pathname === "/kegiatan") {
       setActiveLink("kegiatan");
     } else if (pathname === "/lembaga") {
       setActiveLink("lembaga");
-    } else if (pathname === "/potensi") {
-      setActiveLink("potensi");
+    } else if (pathname === "/berita") {
+      setActiveLink("project");
+    } else if (pathname === "/potensi" || pathname === "/detailpotensi") {
+      setActiveLink("experience");
     } else {
       // Set berdasarkan path lainnya
       const currentItem = menuItems.find(item => item.href === pathname);
@@ -270,20 +288,16 @@ export default function Navbar() {
     const handleScroll = () => {
       setScrollActive(window.scrollY > 20);
       
-      // PERBAIKAN: Tambahkan "project" ke dalam array sections
       const sections = ["home", "about", "experience", "project"];
       const scrollPosition = window.scrollY;
       const windowHeight = window.innerHeight;
-      const documentHeight = document.documentElement.scrollHeight;
       
       let currentSection = "home"; // Default to home
       
       // Jika di atas 100px dari top, anggap masih di home
       if (scrollPosition < 100) {
         currentSection = "home";
-      }
-  
-      else {
+      } else {
         // Cari section mana yang paling dekat dengan tengah viewport
         let closestSection = "home";
         let closestDistance = Infinity;
@@ -331,18 +345,23 @@ export default function Navbar() {
     };
   }, [pathname]);
 
-  // Handle hash pada URL (untuk direct link ke section)
+  // Handle hash pada URL (untuk direct link ke section dengan custom hash)
   useEffect(() => {
     if (pathname === "/" && window.location.hash) {
       const hash = window.location.hash.replace("#", "");
-      setTimeout(() => {
-        scroller.scrollTo(hash, {
-          duration: 1000,
-          smooth: true,
-          offset: -80, // Offset untuk navbar fixed
-        });
-        setActiveLink(hash);
-      }, 100);
+      const menuItem = findMenuByHash(hash);
+      
+      if (menuItem) {
+        setTimeout(() => {
+          // Scroll ke section menggunakan ID element (bukan custom hash)
+          scroller.scrollTo(menuItem.id, {
+            duration: 1000,
+            smooth: true,
+            offset: -80, // Offset untuk navbar fixed
+          });
+          setActiveLink(menuItem.id);
+        }, 100);
+      }
     }
   }, [pathname]);
 

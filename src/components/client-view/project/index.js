@@ -77,19 +77,19 @@ export default function ClientProjectView({ data }) {
                     </div>
                   )}
                 </div>
-                <div className="mt-4">
+                <div className="mt-4 mb-2">
                   <span className="inline-block bg-green1-500 text-white-300 text-sm font-semibold px-2 py-1 rounded-full">
                     {item.github || "Uncategorized"}
                   </span>
                   <h3 className="mt-2 text-xl font-semibold text-black">{item.name}</h3>
-                  <p className="mt-2 text-gray-600 text-justify">
+                  <p className="mt-2 mb-4 text-gray-600 text-justify">
                   {item.technologies
                     ? item.technologies.split('.').slice(0, 1).join('.') + (item.technologies.split('.').length > 2 ? '.' : '')
                     : "No description available"}
                 </p>
-                  <Link 
-                    href={`/berita?id=${item._id || item.id}`} 
-                    className="mt-4 inline-block text-orange-500 hover:underline"
+                  <Link
+                    href={`/berita?id=${item._id || item.id}`}
+                    className="bg-orange-500 hover:bg-orange-500 text-white-500 text-xs px-6 py-2 rounded-full transition-colors font-medium"
                   >
                     Baca Selengkapnya <span>→</span>
                   </Link>

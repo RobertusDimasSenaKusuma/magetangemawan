@@ -4,6 +4,7 @@ import { useSearchParams } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import {ArrowLeft} from 'lucide-react';
 
 export default function BeritaPage() {
   const searchParams = useSearchParams();
@@ -57,10 +58,11 @@ export default function BeritaPage() {
       
       setBerita(foundBerita);
       
-      // Ambil berita terkait (6 berita lainnya untuk sidebar)
+      // Ambil berita terkait (6 berita lainnya DARI KATEGORI YANG BERBEDA untuk sidebar)
       const related = result.data
         .filter(item => 
-          (item._id !== beritaId && item._id?.$oid !== beritaId && item.id !== beritaId)
+          (item._id !== beritaId && item._id?.$oid !== beritaId && item.id !== beritaId) &&
+          item.github !== foundBerita.github // Filter kategori yang berbeda
         )
         .slice(0, 6);
       
@@ -166,20 +168,8 @@ export default function BeritaPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-     
-       <div className="max-w-7xl mx-auto px-4 py-4">
-          <Link 
-            href="/#project" 
-            className="inline-flex items-center text-gray-600 hover:text-green-600 transition-colors font-medium"
-          >
-            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-            back
-          </Link>
-        </div>
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 py-8">
+      <div className="max-w-7xl mx-auto px-4 py-8 mt-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Article Content */}
           <div className="lg:col-span-2">
@@ -188,19 +178,15 @@ export default function BeritaPage() {
               {/* Author Info and Date - Improved Layout */}
               <div className="p-4 md:p-6 border-b border-gray-100">
                 <div className="flex items-center justify-between">
-                  {/* Left side - Author Info */}
-                  <div className="flex items-center space-x-3">
-                    <div className="w-12 h-12 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center flex-shrink-0">
-                      <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
-                      </svg>
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-gray-800 text-sm md:text-base">
-                        {berita.website || "Admin Penulis"}
-                      </h3>
-                    </div>
-                  </div>
+
+                  {/* left side - Back button */}
+                  <Link 
+                    href="/#project" 
+                    className="flex items-center gap-2 text-blue-600 hover:text-blue-800 text-sm font-medium"
+                  >
+                    <ArrowLeft className="w-4 h-4" />
+                    Kembali
+                  </Link>
                   
                   {/* Right side - Date and Category */}
                   <div className="text-right">
@@ -236,6 +222,19 @@ export default function BeritaPage() {
 
               {/* Article Body */}
               <div className="p-4 md:p-6">
+                 {/* Left side - Author Info */}
+                  <div className="flex items-center space-x-3">
+                    <div className="w-12 h-12 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center flex-shrink-0">
+                      <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+                      </svg>
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-gray-800 text-sm md:text-base">
+                        {berita.website || "Admin Penulis"}
+                      </h3>
+                    </div>
+                  </div>
                 {/* Title */}
                 <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-4 md:mb-6 leading-tight">
                   {berita.name || "Judul Berita"}
@@ -385,7 +384,7 @@ export default function BeritaPage() {
             {/* Related Articles on Mobile */}
             <div className="lg:hidden mt-8">
               <div className="bg-white rounded-lg shadow-lg p-4 md:p-6">
-                <h3 className="text-lg md:text-xl font-bold text-gray-800 mb-4 md:mb-6">Berita Terbaru</h3>
+                <h3 className="text-lg md:text-xl font-bold text-gray-800 mb-4 md:mb-6">Berita Lainnya</h3>
                 <div className="space-y-4">
                   {relatedBerita.length > 0 ? (
                     relatedBerita.slice(0, 4).map((item, index) => (
@@ -417,7 +416,7 @@ export default function BeritaPage() {
                         {/* Content */}
                         <div className="flex-1 min-w-0">
                           <h4 className="font-semibold text-gray-800 mb-2 line-clamp-2 text-sm md:text-base group-hover:text-green-600 transition-colors">
-                            {item.name || "Berita Terbaru"}
+                            {item.name || "Berita Lainnya"}
                           </h4>
                           <p className="text-gray-600 text-xs md:text-sm mb-3 line-clamp-2">
                             {truncateText(item.description, 80)}
@@ -441,7 +440,7 @@ export default function BeritaPage() {
                       <div key={index} className="flex gap-4 bg-gray-50 rounded-lg shadow-md p-4">
                         <div className="w-16 h-16 md:w-20 md:h-20 bg-gray-200 rounded-lg flex-shrink-0"></div>
                         <div className="flex-1">
-                          <h4 className="font-semibold text-gray-800 mb-2 text-sm md:text-base">Berita Terbaru</h4>
+                          <h4 className="font-semibold text-gray-800 mb-2 text-sm md:text-base">Berita Lainnya</h4>
                           <p className="text-xs md:text-sm text-gray-600 mb-3">Lorem ipsum dolor sit amet...</p>
                           <div className="flex items-center justify-between">
                             <p className="text-xs text-gray-500">Tanggal publikasi</p>
@@ -464,7 +463,7 @@ export default function BeritaPage() {
 
               {/* Related Articles */}
               <div className="bg-white rounded-lg shadow-lg p-6">
-                <h3 className="text-lg font-bold text-gray-800 mb-4">Berita Terbaru</h3>
+                <h3 className="text-lg font-bold text-gray-800 mb-4">Berita Lainnya</h3>
                 <div className="space-y-4">
                   {relatedBerita.length > 0 ? (
                     relatedBerita.slice(0, 5).map((item, index) => (
@@ -496,7 +495,7 @@ export default function BeritaPage() {
                         {/* Content */}
                         <div className="flex-1 min-w-0">
                           <h4 className="font-medium text-gray-800 mb-1 text-sm line-clamp-2 group-hover:text-green-600 transition-colors">
-                            {item.name || "Berita Terbaru"}
+                            {item.name || "Berita Lainnya"}
                           </h4>
                           <p className="text-gray-600 text-xs mb-2 line-clamp-1">
                             {truncateText(item.description, 50)}
@@ -520,7 +519,7 @@ export default function BeritaPage() {
                       <div key={index} className="flex gap-3 bg-gray-50 rounded-lg shadow-md p-3">
                         <div className="w-14 h-14 bg-gray-200 rounded-lg flex-shrink-0"></div>
                         <div className="flex-1">
-                          <h4 className="font-medium text-gray-800 mb-1 text-sm">Berita Terbaru</h4>
+                          <h4 className="font-medium text-gray-800 mb-1 text-sm">Berita Lainnya</h4>
                           <p className="text-xs text-gray-600 mb-2">Lorem ipsum dolor sit amet...</p>
                           <div className="flex items-center justify-between">
                             <p className="text-xs text-gray-500">Tanggal publikasi</p>

@@ -5,8 +5,6 @@
       "nama": "BPD",
       "kategori": "Pemerintahan",
       "deskripsi": "Badan Permusyawaratan Desa yang berperan dalam perencanaan dan pengawasan pembangunan desa.",
-      "tahun_berdiri": 2000,
-      "maps_link": "https://maps.google.com/search/Farma+Kambing+Etawa+Sumbersawit",
       "foto": "/images/bpd.jpg"
     },
     {
@@ -14,8 +12,6 @@
       "nama": "PKK",
       "kategori": "Sosial",
       "deskripsi": "Pemberdayaan Kesejahteraan Keluarga, fokus pada pemberdayaan perempuan dan keluarga.",
-      "tahun_berdiri": 1995,
-      "maps_link": "https://maps.google.com/search/Farma+Kambing+Etawa+Sumbersawit",
       "foto": "/images/pkk.jpg"
     },
     {
@@ -23,8 +19,6 @@
       "nama": "Karang Taruna",
       "kategori": "Pemuda",
       "deskripsi": "Organisasi pemuda yang menggerakkan kegiatan sosial, budaya, dan pemberdayaan generasi muda.",
-      "tahun_berdiri": 2005,
-      "maps_link": "https://maps.google.com/search/Farma+Kambing+Etawa+Sumbersawit",
       "foto": "/images/karang_taruna.jpg"
     },
     {
@@ -32,8 +26,6 @@
       "nama": "LPMD",
       "kategori": "Pemerintahan",
       "deskripsi": "Lembaga Pemberdayaan Masyarakat Desa yang mendukung program pembangunan desa.",
-      "tahun_berdiri": 2002,
-      "maps_link": "https://maps.google.com/search/Farma+Kambing+Etawa+Sumbersawit",
       "foto": "/images/lpmd.jpg"
     },
     {
@@ -41,8 +33,6 @@
       "nama": "Posyandu Mawar",
       "kategori": "Kesehatan",
       "deskripsi": "Pos Pelayanan Terpadu untuk kesehatan ibu dan anak, termasuk imunisasi dan penyuluhan.",
-      "tahun_berdiri": 2010,
-      "maps_link": "https://maps.google.com/search/Farma+Kambing+Etawa+Sumbersawit",
       "foto": "/images/posyandu_mawar.jpg"
     },
     {
@@ -50,8 +40,6 @@
       "nama": "Kelompok Tani Makmur",
       "kategori": "Ekonomi",
       "deskripsi": "Kelompok petani yang bekerja sama untuk meningkatkan produktivitas pertanian desa.",
-      "tahun_berdiri": 2008,
-      "maps_link": "https://maps.google.com/search/Farma+Kambing+Etawa+Sumbersawit",
       "foto": "/images/kelompok_tani.jpg"
     },
     {
@@ -59,8 +47,6 @@
       "nama": "Posyandu Mawar",
       "kategori": "Kesehatan",
       "deskripsi": "Pos Pelayanan Terpadu untuk kesehatan ibu dan anak, termasuk imunisasi dan penyuluhan.",
-      "tahun_berdiri": 2010,
-      "maps_link": "https://maps.google.com/search/Farma+Kambing+Etawa+Sumbersawit",
       "foto": "/images/posyandu_mawar.jpg"
     },
     {
@@ -68,7 +54,6 @@
       "nama": "Kelompok Tani Makmur",
       "kategori": "Ekonomi",
       "deskripsi": "Kelompok petani yang bekerja sama untuk meningkatkan produktivitas pertanian desa.",
-      "tahun_berdiri": 2008,
       "foto": "/images/kelompok_tani.jpg"
     }
   ]

@@ -85,25 +85,25 @@ export default function FooterContact() {
             <div className="md:col-span-1">
               <h3 className="text-lg font-semibold mb-3 flex items-center text-white-500">
                 <Mail className="w-4 h-4 mr-2" />
-                Send Message
+                Kirim Masukan
               </h3>
               <div className="space-y-2">
                 <input
                   type="text"
-                  placeholder="Your name"
+                  placeholder="Nama Pengirim"
                   value={formData.name}
                   onChange={(e) => setFormData({...formData, name: e.target.value})}
                   className="w-full px-3 py-2 text-sm rounded bg-white/20 border border-white/30 placeholder-white/50 text-white focus:outline-none focus:border-white/50"
                 />
                 <input
                   type="email"
-                  placeholder="Your email"
+                  placeholder="Email Pengirim"
                   value={formData.email}
                   onChange={(e) => setFormData({...formData, email: e.target.value})}
                   className="w-full px-3 py-2 text-sm rounded bg-white/20 border border-white/30 placeholder-white/50 text-white focus:outline-none focus:border-white/50"
                 />
                 <textarea
-                  placeholder="Your message"
+                  placeholder="Pesan Pengirim"
                   rows="3"
                   value={formData.message}
                   onChange={(e) => setFormData({...formData, message: e.target.value})}
@@ -125,7 +125,7 @@ export default function FooterContact() {
                   ) : (
                     <>
                       <Send className="w-3 h-3 mr-2 text-white-500" />
-                      Send
+                      Kirim
                     </>
                   )}
                 </button>

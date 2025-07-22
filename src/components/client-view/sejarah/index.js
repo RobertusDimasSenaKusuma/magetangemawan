@@ -295,10 +295,50 @@ export default function Sejarah() {
                           </p>
                         </div>
                       ))}
+                      
+                      {/* Button Lihat Sejarah Selengkapnya */}
+                      <div style={{ 
+                        textAlign: 'center', 
+                        marginTop: '2rem',
+                        marginBottom: '1rem'
+                      }}>
+                        <a 
+                          href="https://sumbersawit.magetan.go.id/portal/desa/sejarah-desa"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{
+                            display: 'inline-block',
+                            backgroundColor: '#059669',
+                            color: '#ffffff',
+                            padding: '0.75rem 1.5rem',
+                            borderRadius: '0.5rem',
+                            textDecoration: 'none',
+                            fontSize: 'clamp(0.9rem, 2vw, 1rem)',
+                            fontWeight: '600',
+                            transition: 'all 0.3s ease',
+                            boxShadow: '0 4px 10px rgba(5, 150, 105, 0.3)',
+                            border: 'none',
+                            cursor: 'pointer'
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.backgroundColor = '#047857';
+                            e.currentTarget.style.transform = 'translateY(-2px)';
+                            e.currentTarget.style.boxShadow = '0 6px 15px rgba(5, 150, 105, 0.4)';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.backgroundColor = '#059669';
+                            e.currentTarget.style.transform = 'translateY(0)';
+                            e.currentTarget.style.boxShadow = '0 4px 10px rgba(5, 150, 105, 0.3)';
+                          }}
+                        >
+                          📖 Lihat Sejarah Selengkapnya
+                        </a>
+                      </div>
                     </div>
                   ) : null}
                 </div>
               ))}
+              
 
               {/* Highlights Section */}
               <div style={{ marginTop: '3rem' }}>

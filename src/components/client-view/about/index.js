@@ -54,32 +54,27 @@ export default function ClientAboutView({ data = {} }) {
 
   // Statistics data matching the image design
   const statisticsData = [
-    { 
-      number: "3000+", 
-      label: "Warga Desa", 
-      icon: "👥",
-      
-     
+    {
+        number: "3000+",
+        label: "Warga Desa",
+        icon: "👥",                  
     },
-    { 
-      number: "25", 
-      label: "Program KKN", 
-      icon: "📚",
-     
+    {
+        number: "9",
+        label: "Jumlah Dukuh",
+        icon: "🏘️",           
     },
-    { 
-      number: "15", 
-      label: "UMKM Aktif", 
-      icon: "🏪",
-     
+    {
+        number: "20+",
+        label: "Potensi Desa",
+        icon: "💎",           
     },
-    { 
-      number: "98%", 
-      label: "Kepuasan", 
-      icon: "⭐",
-      
+    {
+        number: "300+ Ha",
+        label: "Luas Wilayah",
+        icon: "🗺️",            
     }
-  ];
+];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-100 via-blue-100 to-indigo-200 py-24 relative overflow-hidden">
@@ -199,7 +194,7 @@ export default function ClientAboutView({ data = {} }) {
                 
                 {/* Title Badge */}
                 <motion.div 
-                  className="absolute top-4 right-4 bg-gradient-to-r from-orange-100/90 to-orange-50/90 backdrop-blur-sm text-orange-700 px-4 py-2 rounded-full text-sm font-semibold shadow-md"
+                  className="absolute top-4 right-4 bg-green1-500 text-white-500 px-4 py-2 rounded-full text-sm font-semibold shadow-md"
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.6, delay: 0.5 }}
@@ -215,11 +210,11 @@ export default function ClientAboutView({ data = {} }) {
             <motion.div variants={setVariants} className="space-y-6">
               <div className="space-y-4">
                 <p className="text-gray-800 leading-relaxed text-justify">
-                  Selama dua tahun menjadi Staff Jaringan Eksternal BEM KM SV UGM, saya menimba kerja sama strategis dengan berbagai instansi eksternal melalui koordinasi, negosiasi, dan komunikasi yang efektif. Pengalaman ini menjadi sarana penguatan kemampuan interpersonal sekaligus pengamalan nilai-nilai Pancasila, khususnya sila keempat dan kelima, melalui semangat musyawarah, gotong royong, dan keadilan dalam membangun kolaborasi.
+                Desa Sumbersawit merupakan salah satu desa yang terletak di Kecamatan Sidorejo, Kabupaten Magetan, Provinsi Jawa Timur. Desa ini memiliki jumlah penduduk lebih dari 3.000 jiwa dan terdiri dari 9 dukuh yang tersebar di wilayah dengan kontur alam yang subur dan asri. Sebagai bagian dari wilayah pegunungan, Desa Sumbersawit dianugerahi lingkungan yang sejuk, udara bersih, dan pemandangan alam yang menawan, menjadikannya tempat tinggal yang nyaman sekaligus memiliki potensi wisata alam yang menjanjikan. Keberagaman budaya serta semangat kebersamaan masyarakat menjadi identitas kuat desa ini.
                 </p>
                 
                 <p className="text-gray-800 leading-relaxed text-justify">
-                  Selama dua tahun menjadi Staff Jaringan Eksternal BEM KM SV UGM, saya menjalani kerja sama strategis dengan berbagai instansi eksternal melalui koordinasi, negosiasi, dan komunikasi yang efektif. Pengalaman ini menjadi sarana penguatan kemampuan interpersonal sekaligus pengamalan nilai-nilai Pancasila.
+                  Selain kekayaan alam, Desa Sumbersawit memiliki beragam potensi lokal yang terus dikembangkan, seperti pertanian, peternakan, dan usaha mikro masyarakat. Berbagai upaya pembangunan dilakukan untuk meningkatkan kesejahteraan warga, mulai dari perbaikan infrastruktur, layanan digital desa, hingga pemberdayaan pemuda dan perempuan. Dengan semangat inovasi dan gotong royong, desa ini terus melangkah menuju kemandirian dan kemajuan yang berkelanjutan.
                 </p>
               </div>
               <br>

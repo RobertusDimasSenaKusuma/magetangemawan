@@ -1,5 +1,5 @@
 import ClientAboutView from "@/components/client-view/about";
-import ClientContactView from "@/components/client-view/contact";
+import Footer from '@/components/client-view/contact';
 import ClientExperienceAndEducationView from "@/components/client-view/experience";
 import ClientHomeView from "@/components/client-view/home";
 import ClientProjectView from "@/components/client-view/project";
@@ -102,8 +102,9 @@ export default async function Home() {
           experienceData={experienceSectionData || []}
         />
         <ClientProjectView data={projectSectionData || []} />
-        <ClientContactView />
+        <Footer />
       </div>
+      
     );
   } catch (error) {
     console.error('💥 Error in Home component:', error);
@@ -118,7 +119,7 @@ export default async function Home() {
           experienceData={[]}
         />
         <ClientProjectView data={[]} />
-        <ClientContactView />
+        <Footer />
       </div>
     );
   }

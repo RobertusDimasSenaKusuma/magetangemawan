@@ -6,15 +6,15 @@
       "kategori": "Sosial",
       "deskripsi": "Kegiatan gotong royong membersihkan lingkungan desa setiap akhir bulan.",
       "tahun": 2025,
-      "foto": "/images/kerja_bakti.jpg"
+      "foto": "data/images/prasarana/voli.jpg"
     },
     {
       "id": 2,
       "nama": "Pengajian Rutin",
-      "kategori": "Keagamaan",
+      "kategori": "Sosial",
       "deskripsi": "Pengajian mingguan di masjid desa untuk mempererat ukhuwah Islamiyah.",
       "tahun": 2025,
-      "foto": "/images/pengajian.jpg"
+      "foto": "data/images/prasarana/voli.jpg"
     },
     {
       "id": 3,
