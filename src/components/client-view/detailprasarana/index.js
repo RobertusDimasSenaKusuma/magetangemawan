@@ -192,13 +192,6 @@ export default function DetailPrasaranaPage() {
         <div className="text-center">
           <h1 className="text-2xl font-bold text-red-600 mb-4">Error</h1>
           <p className="text-gray-600 mb-4">{error}</p>
-          <Link 
-            href="/prasarana" 
-            className="inline-flex items-center gap-2 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Kembali ke Prasarana
-          </Link>
         </div>
       </div>
     );
@@ -210,13 +203,6 @@ export default function DetailPrasaranaPage() {
         <div className="text-center">
           <h1 className="text-2xl font-bold text-gray-800 mb-4">Prasarana Tidak Ditemukan</h1>
           <p className="text-gray-600 mb-4">Prasarana yang Anda cari tidak dapat ditemukan.</p>
-          <Link 
-            href="/prasarana" 
-            className="inline-flex items-center gap-2 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Kembali ke Prasarana
-          </Link>
         </div>
       </div>
     );
@@ -234,7 +220,7 @@ export default function DetailPrasaranaPage() {
       )}
       
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 py-8 mt-4">
+      <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Article Content */}
           <div className="lg:col-span-2">
@@ -513,7 +499,7 @@ export default function DetailPrasaranaPage() {
 
           {/* Sidebar */}
           <div className="lg:col-span-1 hidden lg:block">
-            <div className="sticky top-8 space-y-6">
+            <div className="sticky top-8 space-y-6 mt-8">
               {/* Related Prasarana */}
               <div className="bg-white rounded-lg shadow-lg p-6">
                 <h3 className="text-lg font-bold text-gray-800 mb-4">Prasarana Lainnya</h3>

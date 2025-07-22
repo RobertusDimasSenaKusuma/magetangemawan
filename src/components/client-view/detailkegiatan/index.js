@@ -188,13 +188,6 @@ export default function DetailKegiatanPage() {
         <div className="text-center">
           <h1 className="text-2xl font-bold text-red-600 mb-4">Error</h1>
           <p className="text-gray-600 mb-4">{error}</p>
-          <Link 
-            href="/kegiatan" 
-            className="inline-flex items-center gap-2 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Kembali ke Kegiatan
-          </Link>
         </div>
       </div>
     );
@@ -206,13 +199,6 @@ export default function DetailKegiatanPage() {
         <div className="text-center">
           <h1 className="text-2xl font-bold text-gray-800 mb-4">Kegiatan Tidak Ditemukan</h1>
           <p className="text-gray-600 mb-4">Kegiatan yang Anda cari tidak dapat ditemukan.</p>
-          <Link 
-            href="/kegiatan" 
-            className="inline-flex items-center gap-2 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Kembali ke Kegiatan
-          </Link>
         </div>
       </div>
     );
@@ -495,8 +481,8 @@ export default function DetailKegiatanPage() {
           </div>
 
           {/* Sidebar */}
-          <div className="lg:col-span-1 hidden lg:block">
-            <div className="sticky top-8 space-y-6">
+           <div className="lg:col-span-1 hidden lg:block">
+            <div className="sticky top-8 space-y-6 mt-8">
               {/* Related Kegiatan */}
               <div className="bg-white rounded-lg shadow-lg p-6">
                 <h3 className="text-lg font-bold text-gray-800 mb-4">Kegiatan Lainnya</h3>

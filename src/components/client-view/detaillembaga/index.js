@@ -191,13 +191,6 @@ export default function DetailLembagaPage() {
         <div className="text-center">
           <h1 className="text-2xl font-bold text-red-600 mb-4">Error</h1>
           <p className="text-gray-600 mb-4">{error}</p>
-          <Link 
-            href="/lembaga" 
-            className="inline-flex items-center gap-2 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Kembali ke Lembaga
-          </Link>
         </div>
       </div>
     );
@@ -209,13 +202,6 @@ export default function DetailLembagaPage() {
         <div className="text-center">
           <h1 className="text-2xl font-bold text-gray-800 mb-4">Lembaga Tidak Ditemukan</h1>
           <p className="text-gray-600 mb-4">Lembaga yang Anda cari tidak dapat ditemukan.</p>
-          <Link 
-            href="/lembaga" 
-            className="inline-flex items-center gap-2 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Kembali ke Lembaga
-          </Link>
         </div>
       </div>
     );
@@ -481,8 +467,8 @@ export default function DetailLembagaPage() {
           </div>
 
           {/* Sidebar */}
-          <div className="lg:col-span-1 hidden lg:block">
-            <div className="sticky top-8 space-y-6">
+           <div className="lg:col-span-1 hidden lg:block">
+            <div className="sticky top-8 space-y-6 mt-8">
               {/* Related Lembaga */}
               <div className="bg-white-500 rounded-lg shadow-lg p-6">
                 <h3 className="text-lg font-bold text-gray-800 mb-4">Lembaga Kategori Lain</h3>
