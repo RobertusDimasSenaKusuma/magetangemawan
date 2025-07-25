@@ -20,6 +20,13 @@ export default function AdminSidebar({
       description: "kelola berita & artikel",
     },
     {
+      id: "potensi",
+      label: "kelola potensi",
+      icon: "📁",
+      color: "indigo",
+      description: "kelola potensi desa",
+    },
+    {
       id: "contact",
       label: "Saran & Masukan",
       icon: "📧",

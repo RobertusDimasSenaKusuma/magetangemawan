@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import AdminContactView from "@/components/admin-view/contact";
 import Login from "@/components/admin-view/login";
 import AdminProjectView from "@/components/admin-view/project";
+import AdminPotensiView from "@/components/admin-view/potensi";
 import AdminSidebar from "@/components/admin-view/sidebar";
 import { addData, getData, login, updateData } from "@/services";
 
@@ -12,6 +13,19 @@ const initialProjectFormData = {
   website: "",
   technologies: "",
   github: "",
+};
+
+const initialPotensiFormData = {
+  nama: "",
+  kategori: "",
+  deskripsi: "",
+  tahun_mulai: "",
+  lokasi: "",
+  maps_link: "",
+  shopee_link: "",
+  facebook_link: "",
+  instagram_link: "",
+  whatsapp_link: "",
 };
 
 const initialLoginFormData = {
@@ -23,6 +37,7 @@ export default function AdminView() {
   const [currentSelectedTab, setCurrentSelectedTab] = useState("project");
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [projectViewFormData, setProjectViewFormData] = useState(initialProjectFormData);
+  const [potensiViewFormData, setPotensiViewFormData] = useState(initialPotensiFormData);
   const [allData, setAllData] = useState({});
   const [update, setUpdate] = useState(false);
   const [authUser, setAuthUser] = useState(null); // awal null, bukan false
@@ -38,6 +53,17 @@ export default function AdminView() {
             handleSaveData={handleSaveData}
             setFormData={setProjectViewFormData}
             data={allData?.project}
+          />
+        );
+      case "potensi":
+        return (
+          <AdminPotensiView
+            formData={potensiViewFormData}
+            handleSaveData={handleSaveData}
+            setFormData={setPotensiViewFormData}
+            data={allData?.potensi}
+            update={update}
+            setUpdate={setUpdate}
           />
         );
       case "contact":
@@ -60,6 +86,7 @@ export default function AdminView() {
   async function handleSaveData() {
     const dataMap = {
       project: projectViewFormData,
+      potensi: potensiViewFormData,
     };
 
     const response = update
@@ -69,6 +96,7 @@ export default function AdminView() {
     if (response.success) {
       resetFormDatas();
       extractAllDatas();
+      setUpdate(false); // Reset update state after successful save
     }
   }
 
@@ -78,6 +106,7 @@ export default function AdminView() {
 
   function resetFormDatas() {
     setProjectViewFormData(initialProjectFormData);
+    setPotensiViewFormData(initialPotensiFormData);
   }
 
   useEffect(() => {
@@ -127,19 +156,6 @@ export default function AdminView() {
       <div className={`flex-1 transition-all duration-300 ${isSidebarOpen ? 'ml-56' : 'ml-0'}`}>
         <div className="p-4 lg:p-6 pt-16 lg:pt-6">
           <div className="max-w-6xl mx-auto">
-            {/* Header */}
-            <div className="mb-2 ">
-              <div className="flex items-center space-x-3 mb-4">  
-                  <span className="text-white text-xl">
-                    {currentSelectedTab === "Berita & Artikel"}
-                    {currentSelectedTab === "Saran & Masukan"}
-                  </span>
-                <div>
-                </div>
-              </div>
-              
-            </div>
-
             {/* Component Content */}
             <div className="bg-white rounded-lg shadow-md p-2">
               {renderCurrentComponent()}

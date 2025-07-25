@@ -11,7 +11,8 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-export const dynamic = "force-dynamic";
+export const dynamic = "force-dynamic"; // Hindari cache
+export const runtime = "nodejs";        // Pakai Node, bukan Edge
 
 export async function POST(req) {
   try {
@@ -22,37 +23,37 @@ export async function POST(req) {
     const technologies = formData.get('technologies');
     const website = formData.get('website');
     const github = formData.get('github');
-    const image = formData.get('image');
+    const image = formData.get('image'); // File type
 
     let imageUrl = '';
 
-    // Upload gambar ke Cloudinary jika ada
     if (image && image.size > 0) {
       const bytes = await image.arrayBuffer();
       const buffer = Buffer.from(bytes);
+      const base64Image = `data:${image.type};base64,${buffer.toString('base64')}`;
 
-      // Upload ke Cloudinary
-      const uploadResponse = await new Promise((resolve, reject) => {
-        cloudinary.uploader.upload_stream(
-          {
-            resource_type: "image",
-            folder: "portfolio-projects", // Folder di Cloudinary
-            transformation: [
-              { width: 800, height: 600, crop: "fill" }, // Resize gambar
-              { quality: "auto" }
-            ]
-          },
-          (error, result) => {
-            if (error) reject(error);
-            else resolve(result);
-          }
-        ).end(buffer);
-      });
+      try {
+        const uploadResponse = await cloudinary.uploader.upload(base64Image, {
+          resource_type: "image",
+          folder: "portfolio-projects",
+          transformation: [
+            { width: 800, height: 600, crop: "fill" },
+            { quality: "auto" }
+          ]
+        });
 
-      imageUrl = uploadResponse.secure_url;
+        imageUrl = uploadResponse.secure_url;
+      } catch (cloudErr) {
+        console.error("Cloudinary upload error:", cloudErr);
+        return NextResponse.json({
+          success: false,
+          message: "Image upload failed",
+          error: cloudErr.message
+        });
+      }
     }
 
-    // Simpan data ke database
+    // Simpan data ke MongoDB
     const projectData = {
       name,
       technologies,
@@ -63,21 +64,14 @@ export async function POST(req) {
 
     const saveData = await Project.create(projectData);
 
-    if (saveData) {
-      return NextResponse.json({
-        success: true,
-        message: "Project saved successfully",
-        data: saveData
-      });
-    } else {
-      return NextResponse.json({
-        success: false,
-        message: "Something goes wrong! Please try again",
-      });
-    }
-  } catch (e) {
-    console.log("Error:", e);
+    return NextResponse.json({
+      success: true,
+      message: "Project saved successfully",
+      data: saveData
+    });
 
+  } catch (e) {
+    console.error("API Error:", e);
     return NextResponse.json({
       success: false,
       message: "Something goes wrong! Please try again",
