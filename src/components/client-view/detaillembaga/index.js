@@ -88,67 +88,121 @@ export default function DetailLembagaPage() {
   const fetchLembagaDetail = async (lembagaId) => {
     try {
       setLoading(true);
+      setError(null);
       
       console.log('Fetching lembaga with ID:', lembagaId);
       
-      // Fetch data from lembaga.json
-      const response = await fetch('/data/lembaga.json');
+      // Fetch data from API
+      const response = await fetch('/api/lembaga/get/', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        cache: 'no-cache'
+      });
       
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorText = await response.text();
+        console.error('API Response Error:', response.status, errorText);
+        throw new Error(`Gagal mengambil data: ${response.status} - ${errorText}`);
       }
       
       const data = await response.json();
-      console.log('Fetched data:', data);
+      console.log('Full API Response:', data);
       
-      // Check if data structure is correct
-      if (!data || !data.lembaga || !Array.isArray(data.lembaga)) {
-        console.error('Invalid data structure:', data);
-        throw new Error('Data lembaga tidak valid atau tidak ditemukan');
+      // Handle different possible data structures
+      let lembagaArray = [];
+      
+      if (data.lembaga && Array.isArray(data.lembaga)) {
+        lembagaArray = data.lembaga;
+      } else if (data.data && Array.isArray(data.data)) {
+        lembagaArray = data.data;
+      } else if (Array.isArray(data)) {
+        lembagaArray = data;
+      } else if (data.result && Array.isArray(data.result)) {
+        lembagaArray = data.result;
+      } else {
+        console.error('Unexpected data structure:', data);
+        throw new Error('Format data tidak sesuai - tidak ditemukan array lembaga');
       }
       
-      console.log('Available lembaga:', data.lembaga);
+      console.log('Lembaga array length:', lembagaArray.length);
+      console.log('Available lembaga IDs:', lembagaArray.map(item => ({ 
+        id: item.id || item._id, 
+        nama: item.nama 
+      })));
       
-      // Fixed ID comparison to handle large numbers properly
-      // Convert both IDs to strings for safe comparison
-      const foundLembaga = data.lembaga.find(item => {
-        const itemId = String(item.id);
-        const searchId = String(lembagaId);
-        console.log('Comparing:', itemId, 'with', searchId);
-        return itemId === searchId;
+      // Enhanced ID comparison - check both id and _id fields
+      const foundLembaga = lembagaArray.find(item => {
+        const itemId = item.id || item._id;
+        const matchesId = itemId == lembagaId;
+        const matchesIdStrict = String(itemId) === String(lembagaId);
+        
+        console.log(`Comparing: ${itemId} with ${lembagaId} - loose: ${matchesId}, strict: ${matchesIdStrict}`);
+        
+        return matchesId || matchesIdStrict;
       });
       
       console.log('Found lembaga:', foundLembaga);
       
       if (!foundLembaga) {
+        console.error(`Lembaga dengan ID ${lembagaId} tidak ditemukan`);
+        console.error('Available IDs in data:', lembagaArray.map(p => p.id || p._id));
         throw new Error(`Lembaga dengan ID ${lembagaId} tidak ditemukan`);
       }
       
-      setLembaga(foundLembaga);
+      // Normalize the found lembaga data
+      const normalizedLembaga = {
+        id: foundLembaga.id || foundLembaga._id,
+        nama: foundLembaga.nama || 'Nama tidak tersedia',
+        deskripsi: foundLembaga.deskripsi || 'Deskripsi tidak tersedia',
+        kategori: foundLembaga.kategori || 'Lainnya',
+        foto: foundLembaga.foto || 'https://via.placeholder.com/400x300/10b981/ffffff?text=Foto+Tidak+Tersedia'
+      };
       
-      // Get related lembaga (exclude current lembaga AND same category)
-      // Filter out current lembaga and same category for sidebar
-      const related = data.lembaga
-        .filter(item => 
-          String(item.id) !== String(foundLembaga.id) &&
-          item.kategori?.toLowerCase() !== foundLembaga.kategori?.toLowerCase()
-        )
-        .slice(0, 6);
+      setLembaga(normalizedLembaga);
+      
+      // Get related lembaga (different categories only)
+      const related = lembagaArray
+        .filter(item => {
+          const itemId = item.id || item._id;
+          return itemId != normalizedLembaga.id &&
+                 item.kategori?.toLowerCase() !== normalizedLembaga.kategori?.toLowerCase();
+        })
+        .slice(0, 6)
+        .map(item => ({
+          id: item.id || item._id,
+          nama: item.nama || 'Nama tidak tersedia',
+          deskripsi: item.deskripsi || 'Deskripsi tidak tersedia',
+          kategori: item.kategori || 'Lainnya',
+          foto: item.foto || 'https://via.placeholder.com/400x300/10b981/ffffff?text=Foto+Tidak+Tersedia'
+        }));
       
       setRelatedLembaga(related);
 
-      // Get all lembaga with same category (no limit for pagination)
-      const sameCategoryItems = data.lembaga
-        .filter(item => 
-          String(item.id) !== String(foundLembaga.id) &&
-          item.kategori?.toLowerCase() === foundLembaga.kategori?.toLowerCase()
-        );
+      // Get same category lembaga
+      const sameCategoryItems = lembagaArray
+        .filter(item => {
+          const itemId = item.id || item._id;
+          return itemId != normalizedLembaga.id &&
+                 item.kategori?.toLowerCase() === normalizedLembaga.kategori?.toLowerCase();
+        })
+        .map(item => ({
+          id: item.id || item._id,
+          nama: item.nama || 'Nama tidak tersedia',
+          deskripsi: item.deskripsi || 'Deskripsi tidak tersedia',
+          kategori: item.kategori || 'Lainnya',
+          foto: item.foto || 'https://via.placeholder.com/400x300/10b981/ffffff?text=Foto+Tidak+Tersedia'
+        }));
       
       setSameCategory(sameCategoryItems);
       
+      console.log('Related lembaga:', related.length);
+      console.log('Same category lembaga:', sameCategoryItems.length);
+      
     } catch (err) {
       console.error('Error fetching lembaga:', err);
-      setError(err.message);
+      setError(err.message || 'Terjadi kesalahan saat mengambil data');
     } finally {
       setLoading(false);
     }
@@ -174,12 +228,18 @@ export default function DetailLembagaPage() {
     });
   };
 
+  const handleRetry = () => {
+    if (id) {
+      fetchLembagaDetail(id);
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
           <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-500 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading...</p>
+          <p className="mt-4 text-gray-600">Memuat data lembaga...</p>
         </div>
       </div>
     );
@@ -188,9 +248,24 @@ export default function DetailLembagaPage() {
   if (error) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-red-600 mb-4">Error</h1>
-          <p className="text-gray-600 mb-4">{error}</p>
+        <div className="text-center max-w-md mx-auto p-6">
+          <h1 className="text-2xl font-bold text-red-600 mb-4">Terjadi Kesalahan</h1>
+          <p className="text-gray-600 mb-2">{error}</p>
+          <p className="text-sm text-gray-500 mb-6">ID yang dicari: {id}</p>
+          <div className="space-y-3">
+            <button
+              onClick={handleRetry}
+              className="w-full bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition-colors"
+            >
+              Coba Lagi
+            </button>
+            <Link 
+              href="/lembaga" 
+              className="block w-full bg-green-500 text-white px-6 py-2 rounded-lg hover:bg-green-600 transition-colors text-center"
+            >
+              Kembali ke Daftar Lembaga
+            </Link>
+          </div>
         </div>
       </div>
     );
@@ -201,7 +276,14 @@ export default function DetailLembagaPage() {
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-gray-800 mb-4">Lembaga Tidak Ditemukan</h1>
-          <p className="text-gray-600 mb-4">Lembaga yang Anda cari tidak dapat ditemukan.</p>
+          <p className="text-gray-600 mb-2">Lembaga yang Anda cari tidak dapat ditemukan.</p>
+          <p className="text-sm text-gray-500 mb-4">ID: {id}</p>
+          <Link 
+            href="/lembaga" 
+            className="inline-block bg-green-500 text-white px-6 py-2 rounded-lg hover:bg-green-600 transition-colors"
+          >
+            Kembali ke Daftar Lembaga
+          </Link>
         </div>
       </div>
     );
@@ -214,12 +296,12 @@ export default function DetailLembagaPage() {
       {/* Debug Info - Remove this in production */}
       {process.env.NODE_ENV === 'development' && (
         <div className="bg-yellow-100 p-2 text-xs">
-          <p>Debug: ID = {id}, Lembaga = {lembaga?.nama}</p>
+          <p>Debug: URL ID = {id}, Found ID = {lembaga?.id}, Nama = {lembaga?.nama}, Kategori = {lembaga?.kategori}</p>
         </div>
       )}
       
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 py-8 mt-4">
+      <div className="max-w-7xl mx-auto px-4 py-8 p-2">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Article Content */}
           <div className="lg:col-span-2">

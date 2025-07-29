@@ -86,66 +86,124 @@ export default function DetailKegiatanPage() {
   const fetchKegiatanDetail = async (kegiatanId) => {
     try {
       setLoading(true);
+      setError(null);
       
       console.log('Fetching kegiatan with ID:', kegiatanId);
       
-      // Fetch data from kegiatan.json
-      const response = await fetch('/data/kegiatan.json');
+      // Fetch data from API
+      const response = await fetch('/api/kegiatan/get/', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        cache: 'no-cache'
+      });
       
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorText = await response.text();
+        console.error('API Response Error:', response.status, errorText);
+        throw new Error(`Gagal mengambil data: ${response.status} - ${errorText}`);
       }
       
       const data = await response.json();
-      console.log('Fetched data:', data);
+      console.log('Full API Response:', data);
       
-      // Check if data structure is correct
-      if (!data || !data.kegiatan || !Array.isArray(data.kegiatan)) {
-        console.error('Invalid data structure:', data);
-        throw new Error('Data kegiatan tidak valid atau tidak ditemukan');
+      // Handle different possible data structures
+      let kegiatanArray = [];
+      
+      if (data.kegiatan && Array.isArray(data.kegiatan)) {
+        kegiatanArray = data.kegiatan;
+      } else if (data.data && Array.isArray(data.data)) {
+        kegiatanArray = data.data;
+      } else if (Array.isArray(data)) {
+        kegiatanArray = data;
+      } else if (data.result && Array.isArray(data.result)) {
+        kegiatanArray = data.result;
+      } else {
+        console.error('Unexpected data structure:', data);
+        throw new Error('Format data tidak sesuai - tidak ditemukan array kegiatan');
       }
       
-      console.log('Available kegiatan:', data.kegiatan);
+      console.log('Kegiatan array length:', kegiatanArray.length);
+      console.log('Available kegiatan IDs:', kegiatanArray.map(item => ({ 
+        id: item.id || item._id, 
+        nama: item.nama 
+      })));
       
-      // Fixed ID comparison to handle large numbers properly
-      // Convert both IDs to strings for safe comparison
-      const foundKegiatan = data.kegiatan.find(item => {
-        const itemId = String(item.id);
-        const searchId = String(kegiatanId);
-        console.log('Comparing:', itemId, 'with', searchId);
-        return itemId === searchId;
+      // Enhanced ID comparison - check both id and _id fields
+      const foundKegiatan = kegiatanArray.find(item => {
+        const itemId = item.id || item._id;
+        const matchesId = itemId == kegiatanId;
+        const matchesIdStrict = String(itemId) === String(kegiatanId);
+        
+        console.log(`Comparing: ${itemId} with ${kegiatanId} - loose: ${matchesId}, strict: ${matchesIdStrict}`);
+        
+        return matchesId || matchesIdStrict;
       });
       
       console.log('Found kegiatan:', foundKegiatan);
       
       if (!foundKegiatan) {
+        console.error(`Kegiatan dengan ID ${kegiatanId} tidak ditemukan`);
+        console.error('Available IDs in data:', kegiatanArray.map(p => p.id || p._id));
         throw new Error(`Kegiatan dengan ID ${kegiatanId} tidak ditemukan`);
       }
       
-      setKegiatan(foundKegiatan);
+      // Normalize the found kegiatan data
+      const normalizedKegiatan = {
+        id: foundKegiatan.id || foundKegiatan._id,
+        nama: foundKegiatan.nama || 'Nama tidak tersedia',
+        deskripsi: foundKegiatan.deskripsi || 'Deskripsi tidak tersedia',
+        kategori: foundKegiatan.kategori || 'Lainnya',
+        tahun: foundKegiatan.tahun || 'Tahun tidak tersedia',
+        foto: foundKegiatan.foto || 'https://via.placeholder.com/400x300/10b981/ffffff?text=Foto+Tidak+Tersedia'
+      };
       
-      // Get related kegiatan (different categories only) for sidebar
-      const related = data.kegiatan
-        .filter(item => 
-          String(item.id) !== String(foundKegiatan.id) &&
-          item.kategori?.toLowerCase() !== foundKegiatan.kategori?.toLowerCase()
-        )
-        .slice(0, 6);
+      setKegiatan(normalizedKegiatan);
+      
+      // Get related kegiatan (different categories only)
+      const related = kegiatanArray
+        .filter(item => {
+          const itemId = item.id || item._id;
+          return itemId != normalizedKegiatan.id &&
+                 item.kategori?.toLowerCase() !== normalizedKegiatan.kategori?.toLowerCase();
+        })
+        .slice(0, 6)
+        .map(item => ({
+          id: item.id || item._id,
+          nama: item.nama || 'Nama tidak tersedia',
+          deskripsi: item.deskripsi || 'Deskripsi tidak tersedia',
+          kategori: item.kategori || 'Lainnya',
+          tahun: item.tahun || 'Tahun tidak tersedia',
+          foto: item.foto || 'https://via.placeholder.com/400x300/10b981/ffffff?text=Foto+Tidak+Tersedia'
+        }));
       
       setRelatedKegiatan(related);
 
-      // Get all kegiatan with same category (no limit for pagination)
-      const sameCategoryItems = data.kegiatan
-        .filter(item => 
-          String(item.id) !== String(foundKegiatan.id) &&
-          item.kategori?.toLowerCase() === foundKegiatan.kategori?.toLowerCase()
-        );
+      // Get same category kegiatan
+      const sameCategoryItems = kegiatanArray
+        .filter(item => {
+          const itemId = item.id || item._id;
+          return itemId != normalizedKegiatan.id &&
+                 item.kategori?.toLowerCase() === normalizedKegiatan.kategori?.toLowerCase();
+        })
+        .map(item => ({
+          id: item.id || item._id,
+          nama: item.nama || 'Nama tidak tersedia',
+          deskripsi: item.deskripsi || 'Deskripsi tidak tersedia',
+          kategori: item.kategori || 'Lainnya',
+          tahun: item.tahun || 'Tahun tidak tersedia',
+          foto: item.foto || 'https://via.placeholder.com/400x300/10b981/ffffff?text=Foto+Tidak+Tersedia'
+        }));
       
       setSameCategory(sameCategoryItems);
       
+      console.log('Related kegiatan:', related.length);
+      console.log('Same category kegiatan:', sameCategoryItems.length);
+      
     } catch (err) {
       console.error('Error fetching kegiatan:', err);
-      setError(err.message);
+      setError(err.message || 'Terjadi kesalahan saat mengambil data');
     } finally {
       setLoading(false);
     }
@@ -171,12 +229,18 @@ export default function DetailKegiatanPage() {
     });
   };
 
+  const handleRetry = () => {
+    if (id) {
+      fetchKegiatanDetail(id);
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
           <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-500 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading...</p>
+          <p className="mt-4 text-gray-600">Memuat data kegiatan...</p>
         </div>
       </div>
     );
@@ -185,9 +249,24 @@ export default function DetailKegiatanPage() {
   if (error) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-red-600 mb-4">Error</h1>
-          <p className="text-gray-600 mb-4">{error}</p>
+        <div className="text-center max-w-md mx-auto p-6">
+          <h1 className="text-2xl font-bold text-red-600 mb-4">Terjadi Kesalahan</h1>
+          <p className="text-gray-600 mb-2">{error}</p>
+          <p className="text-sm text-gray-500 mb-6">ID yang dicari: {id}</p>
+          <div className="space-y-3">
+            <button
+              onClick={handleRetry}
+              className="w-full bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition-colors"
+            >
+              Coba Lagi
+            </button>
+            <Link 
+              href="/kegiatan" 
+              className="block w-full bg-green-500 text-white px-6 py-2 rounded-lg hover:bg-green-600 transition-colors text-center"
+            >
+              Kembali ke Daftar Kegiatan
+            </Link>
+          </div>
         </div>
       </div>
     );
@@ -198,7 +277,14 @@ export default function DetailKegiatanPage() {
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-gray-800 mb-4">Kegiatan Tidak Ditemukan</h1>
-          <p className="text-gray-600 mb-4">Kegiatan yang Anda cari tidak dapat ditemukan.</p>
+          <p className="text-gray-600 mb-2">Kegiatan yang Anda cari tidak dapat ditemukan.</p>
+          <p className="text-sm text-gray-500 mb-4">ID: {id}</p>
+          <Link 
+            href="/kegiatan" 
+            className="inline-block bg-green-500 text-white px-6 py-2 rounded-lg hover:bg-green-600 transition-colors"
+          >
+            Kembali ke Daftar Kegiatan
+          </Link>
         </div>
       </div>
     );
@@ -211,12 +297,12 @@ export default function DetailKegiatanPage() {
       {/* Debug Info - Remove this in production */}
       {process.env.NODE_ENV === 'development' && (
         <div className="bg-yellow-100 p-2 text-xs">
-          <p>Debug: ID = {id}, Kegiatan = {kegiatan?.nama}</p>
+          <p>Debug: URL ID = {id}, Found ID = {kegiatan?.id}, Nama = {kegiatan?.nama}, Kategori = {kegiatan?.kategori}</p>
         </div>
       )}
       
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 py-8 mt-4">
+      <div className="max-w-7xl mx-auto px-4 py-8 p-2">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Article Content */}
           <div className="lg:col-span-2">

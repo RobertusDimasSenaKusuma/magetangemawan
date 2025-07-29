@@ -90,66 +90,123 @@ export default function DetailPrasaranaPage() {
   const fetchPrasaranaDetail = async (prasaranaId) => {
     try {
       setLoading(true);
+      setError(null);
       
       console.log('Fetching prasarana with ID:', prasaranaId);
       
-      // Fetch data from prasarana.json
-      const response = await fetch('/data/prasarana.json');
+      // Fetch data from API
+      const response = await fetch('/api/prasarana/get/', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        cache: 'no-cache'
+      });
       
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorText = await response.text();
+        console.error('API Response Error:', response.status, errorText);
+        throw new Error(`Gagal mengambil data: ${response.status} - ${errorText}`);
       }
       
       const data = await response.json();
-      console.log('Fetched data:', data);
+      console.log('Full API Response:', data);
       
-      // Check if data structure is correct
-      if (!data || !data.prasarana || !Array.isArray(data.prasarana)) {
-        console.error('Invalid data structure:', data);
-        throw new Error('Data prasarana tidak valid atau tidak ditemukan');
+      // Handle different possible data structures
+      let prasaranaArray = [];
+      
+      if (data.prasarana && Array.isArray(data.prasarana)) {
+        prasaranaArray = data.prasarana;
+      } else if (data.data && Array.isArray(data.data)) {
+        prasaranaArray = data.data;
+      } else if (Array.isArray(data)) {
+        prasaranaArray = data;
+      } else if (data.result && Array.isArray(data.result)) {
+        prasaranaArray = data.result;
+      } else {
+        console.error('Unexpected data structure:', data);
+        throw new Error('Format data tidak sesuai - tidak ditemukan array prasarana');
       }
       
-      console.log('Available prasarana:', data.prasarana);
+      console.log('Prasarana array length:', prasaranaArray.length);
+      console.log('Available prasarana IDs:', prasaranaArray.map(item => ({ 
+        id: item.id || item._id, 
+        nama: item.nama 
+      })));
       
-      // Fixed ID comparison to handle large numbers properly
-      // Convert both IDs to strings for safe comparison
-      const foundPrasarana = data.prasarana.find(item => {
-        const itemId = String(item.id);
-        const searchId = String(prasaranaId);
-        console.log('Comparing:', itemId, 'with', searchId);
-        return itemId === searchId;
+      // Enhanced ID comparison - check both id and _id fields
+      const foundPrasarana = prasaranaArray.find(item => {
+        const itemId = item.id || item._id;
+        const matchesId = itemId == prasaranaId;
+        const matchesIdStrict = String(itemId) === String(prasaranaId);
+        
+        console.log(`Comparing: ${itemId} with ${prasaranaId} - loose: ${matchesId}, strict: ${matchesIdStrict}`);
+        
+        return matchesId || matchesIdStrict;
       });
       
       console.log('Found prasarana:', foundPrasarana);
       
       if (!foundPrasarana) {
+        console.error(`Prasarana dengan ID ${prasaranaId} tidak ditemukan`);
+        console.error('Available IDs in data:', prasaranaArray.map(p => p.id || p._id));
         throw new Error(`Prasarana dengan ID ${prasaranaId} tidak ditemukan`);
       }
       
-      setPrasarana(foundPrasarana);
+      // Normalize the found prasarana data
+      const normalizedPrasarana = {
+        id: foundPrasarana.id || foundPrasarana._id,
+        nama: foundPrasarana.nama || 'Nama tidak tersedia',
+        deskripsi: foundPrasarana.deskripsi || 'Deskripsi tidak tersedia',
+        kategori: foundPrasarana.kategori || 'Lainnya',
+        foto: foundPrasarana.foto || 'https://via.placeholder.com/400x300/10b981/ffffff?text=Foto+Tidak+Tersedia',
+        lokasi: foundPrasarana.lokasi || 'Desa Sumbersawit',
+        maps_link: foundPrasarana.maps_link || ''
+      };
       
-      // Get related prasarana (6 other prasarana from DIFFERENT categories for sidebar)
-      const related = data.prasarana
-        .filter(item => 
-          String(item.id) !== String(foundPrasarana.id) &&
-          item.kategori?.toLowerCase() !== foundPrasarana.kategori?.toLowerCase()
-        )
-        .slice(0, 6);
+      setPrasarana(normalizedPrasarana);
+      
+      // Get related prasarana (different categories only)
+      const related = prasaranaArray
+        .filter(item => {
+          const itemId = item.id || item._id;
+          return itemId != normalizedPrasarana.id &&
+                 item.kategori?.toLowerCase() !== normalizedPrasarana.kategori?.toLowerCase();
+        })
+        .slice(0, 6)
+        .map(item => ({
+          id: item.id || item._id,
+          nama: item.nama || 'Nama tidak tersedia',
+          deskripsi: item.deskripsi || 'Deskripsi tidak tersedia',
+          kategori: item.kategori || 'Lainnya',
+          foto: item.foto || 'https://via.placeholder.com/400x300/10b981/ffffff?text=Foto+Tidak+Tersedia'
+        }));
       
       setRelatedPrasarana(related);
 
-      // Get all prasarana with same category (no limit for pagination)
-      const sameCategoryItems = data.prasarana
-        .filter(item => 
-          String(item.id) !== String(foundPrasarana.id) &&
-          item.kategori?.toLowerCase() === foundPrasarana.kategori?.toLowerCase()
-        );
+      // Get same category prasarana
+      const sameCategoryItems = prasaranaArray
+        .filter(item => {
+          const itemId = item.id || item._id;
+          return itemId != normalizedPrasarana.id &&
+                 item.kategori?.toLowerCase() === normalizedPrasarana.kategori?.toLowerCase();
+        })
+        .map(item => ({
+          id: item.id || item._id,
+          nama: item.nama || 'Nama tidak tersedia',
+          deskripsi: item.deskripsi || 'Deskripsi tidak tersedia',
+          kategori: item.kategori || 'Lainnya',
+          foto: item.foto || 'https://via.placeholder.com/400x300/10b981/ffffff?text=Foto+Tidak+Tersedia'
+        }));
       
       setSameCategory(sameCategoryItems);
       
+      console.log('Related prasarana:', related.length);
+      console.log('Same category prasarana:', sameCategoryItems.length);
+      
     } catch (err) {
       console.error('Error fetching prasarana:', err);
-      setError(err.message);
+      setError(err.message || 'Terjadi kesalahan saat mengambil data');
     } finally {
       setLoading(false);
     }
@@ -175,12 +232,18 @@ export default function DetailPrasaranaPage() {
     });
   };
 
+  const handleRetry = () => {
+    if (id) {
+      fetchPrasaranaDetail(id);
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
           <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-500 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading...</p>
+          <p className="mt-4 text-gray-600">Memuat data prasarana...</p>
         </div>
       </div>
     );
@@ -189,9 +252,24 @@ export default function DetailPrasaranaPage() {
   if (error) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-red-600 mb-4">Error</h1>
-          <p className="text-gray-600 mb-4">{error}</p>
+        <div className="text-center max-w-md mx-auto p-6">
+          <h1 className="text-2xl font-bold text-red-600 mb-4">Terjadi Kesalahan</h1>
+          <p className="text-gray-600 mb-2">{error}</p>
+          <p className="text-sm text-gray-500 mb-6">ID yang dicari: {id}</p>
+          <div className="space-y-3">
+            <button
+              onClick={handleRetry}
+              className="w-full bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition-colors"
+            >
+              Coba Lagi
+            </button>
+            <Link 
+              href="/prasarana" 
+              className="block w-full bg-green-500 text-white px-6 py-2 rounded-lg hover:bg-green-600 transition-colors text-center"
+            >
+              Kembali ke Daftar Prasarana
+            </Link>
+          </div>
         </div>
       </div>
     );
@@ -202,7 +280,14 @@ export default function DetailPrasaranaPage() {
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-gray-800 mb-4">Prasarana Tidak Ditemukan</h1>
-          <p className="text-gray-600 mb-4">Prasarana yang Anda cari tidak dapat ditemukan.</p>
+          <p className="text-gray-600 mb-2">Prasarana yang Anda cari tidak dapat ditemukan.</p>
+          <p className="text-sm text-gray-500 mb-4">ID: {id}</p>
+          <Link 
+            href="/prasarana" 
+            className="inline-block bg-green-500 text-white px-6 py-2 rounded-lg hover:bg-green-600 transition-colors"
+          >
+            Kembali ke Daftar Prasarana
+          </Link>
         </div>
       </div>
     );
@@ -215,12 +300,12 @@ export default function DetailPrasaranaPage() {
       {/* Debug Info - Remove this in production */}
       {process.env.NODE_ENV === 'development' && (
         <div className="bg-yellow-100 p-2 text-xs">
-          <p>Debug: ID = {id}, Prasarana = {prasarana?.nama}</p>
+          <p>Debug: URL ID = {id}, Found ID = {prasarana?.id}, Nama = {prasarana?.nama}, Kategori = {prasarana?.kategori}</p>
         </div>
       )}
       
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 py-8">
+      <div className="max-w-7xl mx-auto px-4 py-8 p-2">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Article Content */}
           <div className="lg:col-span-2">

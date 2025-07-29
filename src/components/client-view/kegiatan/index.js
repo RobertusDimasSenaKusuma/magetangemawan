@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, ArrowRight, Calendar, Users, Music, Award, Flower, Gamepad2, Briefcase, Heart, ArrowLeft } from 'lucide-react';
 
@@ -51,30 +52,83 @@ export default function KegiatanComponent() {
     }
   };
 
+  const itemsPerPage = 6;
+
   // Fetch JSON data when component mounts
   useEffect(() => {
-    async function fetchData() {
+    const fetchData = async () => {
       try {
-        const response = await fetch('/data/kegiatan.json');
+        setLoading(true);
+        setError(null);
+        
+        const response = await fetch('/api/kegiatan/get/');
+        
         if (!response.ok) {
-          throw new Error('Failed to fetch kegiatan.json');
+          const errorText = await response.text();
+          throw new Error(`HTTP ${response.status}: ${response.statusText}. ${errorText}`);
         }
+        
+        const contentType = response.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+          throw new Error('Response is not valid JSON');
+        }
+        
         const data = await response.json();
-        setContentData(data);
-        setLoading(false);
+        
+        // Validasi struktur data yang lebih fleksibel
+        if (!data) {
+          throw new Error('Response data is null or undefined');
+        }
+        
+        // Coba beberapa kemungkinan struktur data
+        let kegiatanArray = null;
+        if (data.kegiatan && Array.isArray(data.kegiatan)) {
+          kegiatanArray = data.kegiatan;
+        } else if (Array.isArray(data)) {
+          kegiatanArray = data;
+        } else if (data.data && Array.isArray(data.data)) {
+          kegiatanArray = data.data;
+        } else if (data.result && Array.isArray(data.result)) {
+          kegiatanArray = data.result;
+        }
+        
+        if (!kegiatanArray) {
+          throw new Error('Invalid data format: kegiatan array not found in response');
+        }
+        
+        // Validasi bahwa array tidak kosong
+        if (kegiatanArray.length === 0) {
+          console.warn('Kegiatan array is empty');
+        }
+        
+        // Pastikan setiap item memiliki properti yang diperlukan
+        const validatedData = kegiatanArray.map((item, index) => ({
+          id: item.id || item._id || index,
+          nama: item.nama || 'Nama tidak tersedia',
+          deskripsi: item.deskripsi || 'Deskripsi tidak tersedia',
+          kategori: item.kategori || 'Lainnya',
+          tahun: item.tahun || 'Tahun tidak tersedia',
+          foto: item.foto || 'https://via.placeholder.com/400x300/10b981/ffffff?text=Foto+Tidak+Tersedia'
+        }));
+        
+        setContentData({
+          kegiatan: validatedData
+        });
+        
       } catch (err) {
-        setError(err.message);
+        console.error('Error fetching kegiatan data:', err);
+        setError(`Gagal memuat data: ${err.message}`);
+      } finally {
         setLoading(false);
       }
-    }
+    };
+    
     fetchData();
   }, []);
 
-  const itemsPerPage = 6;
-
-  // Handle "Learn more" button click - Navigate to detail page
-  const handleLearnMore = (item) => {
-    window.location.href = `/detailkegiatan?id=${item.id}`;
+  // Handle link click with alert
+  const handleLinkClick = (item) => {
+   
   };
 
   // Loading state
@@ -111,7 +165,7 @@ export default function KegiatanComponent() {
   }
 
   // Check if data exists
-  if (!contentData || !contentData.kegiatan) {
+  if (!contentData || !contentData.kegiatan || contentData.kegiatan.length === 0) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center bg-white rounded-xl p-6 shadow-lg">
@@ -249,13 +303,14 @@ export default function KegiatanComponent() {
 
                   {/* Baca Selengkapnya Button */}
                   <div className="pt-3 border-t border-gray-100">
-                    <button
-                      onClick={() => handleLearnMore(item)}
+                    <Link
+                      href={`/detailkegiatan?id=${item.id || item._id}`}
+                      onClick={() => handleLinkClick(item)}
                       className="w-full bg-green1-500 text-white-500 font-semibold text-sm py-3 px-4 rounded-xl hover:bg-emerald-700 transition-all duration-300 flex items-center justify-center gap-2 group/btn shadow-md hover:shadow-lg transform hover:scale-105"
                     >
                       Baca Selengkapnya
                       <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform duration-300" />
-                    </button>
+                    </Link>
                   </div>
                 </div>
               </div>
@@ -309,7 +364,7 @@ export default function KegiatanComponent() {
         {/* Info Summary */}
         <div className="text-center bg-green1-500 rounded-xl p-4 shadow-lg border border-gray-100">
           <p className="text-sm text-white-500 font-medium">
-            Menampilkan <span className="font-bold text-white-500">{startIndex + 1}-{Math.min(startIndex + itemsPerPage, filteredData.length)}</span> dari <span className="font-bold text-emerald-600">{filteredData.length}</span> prasarana
+            Menampilkan <span className="font-bold text-white-500">{startIndex + 1}-{Math.min(startIndex + itemsPerPage, filteredData.length)}</span> dari <span className="font-bold text-emerald-600">{filteredData.length}</span> kegiatan
             {selectedCategory !== 'Semua' && <span className="text-emerald-600 font-semibold"> ({selectedCategory})</span>}
           </p>
         </div>

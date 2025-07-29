@@ -23,6 +23,7 @@ export async function POST(req) {
     const technologies = formData.get('technologies');
     const website = formData.get('website');
     const github = formData.get('github');
+    const youtube = formData.get('youtube'); // Tambahan field youtube
     const image = formData.get('image'); // File type
 
     let imageUrl = '';
@@ -31,17 +32,19 @@ export async function POST(req) {
       const bytes = await image.arrayBuffer();
       const buffer = Buffer.from(bytes);
       const base64Image = `data:${image.type};base64,${buffer.toString('base64')}`;
-
+      
       try {
         const uploadResponse = await cloudinary.uploader.upload(base64Image, {
           resource_type: "image",
           folder: "portfolio-projects",
           transformation: [
-            { width: 800, height: 600, crop: "fill" },
-            { quality: "auto" }
+            {
+              quality: 50, // Compress 50%
+              format: "auto" // Format optimal otomatis (WebP, AVIF, dll)
+            }
           ]
         });
-
+        
         imageUrl = uploadResponse.secure_url;
       } catch (cloudErr) {
         console.error("Cloudinary upload error:", cloudErr);
@@ -59,6 +62,7 @@ export async function POST(req) {
       technologies,
       website,
       github,
+      youtube, // Tambahkan field youtube
       image: imageUrl
     };
 
@@ -69,7 +73,7 @@ export async function POST(req) {
       message: "Project saved successfully",
       data: saveData
     });
-
+    
   } catch (e) {
     console.error("API Error:", e);
     return NextResponse.json({

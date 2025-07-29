@@ -1,6 +1,6 @@
-// api/potensi/update/route.js
+// api/lembaga/update/route.js
 import connectToDB from "@/database";
-import Potensi from "@/models/Potensi";
+import Lembaga from "@/models/Lembaga";
 import { NextResponse } from "next/server";
 import { v2 as cloudinary } from "cloudinary";
 import mongoose from "mongoose";
@@ -24,50 +24,57 @@ export async function PUT(request) {
     const nama = formData.get("nama");
     const kategori = formData.get("kategori");
     const deskripsi = formData.get("deskripsi");
-    const tahun_mulai = formData.get("tahun_mulai");
-    const lokasi = formData.get("lokasi");
     const foto = formData.get("foto"); // File type
     const removeFoto = formData.get("removeFoto") === "true";
 
-    // Data opsional (sosial media, e-commerce, maps)
-    const maps_link = formData.get("maps_link") || "";
-    const shopee_link = formData.get("shopee_link") || "";
-    const facebook_link = formData.get("facebook_link") || "";
-    const instagram_link = formData.get("instagram_link") || "";
-    const whatsapp_link = formData.get("whatsapp_link") || "";
 
     // Validasi ID
     if (!id || !mongoose.Types.ObjectId.isValid(id)) {
       return NextResponse.json({
         success: false,
-        message: "Invalid or missing potensi ID"
+        message: "Invalid or missing lembaga ID"
       }, { status: 400 });
     }
 
     // Validasi field required
-    if (!nama || !kategori || !deskripsi || !tahun_mulai || !lokasi) {
+    if (!nama || !kategori || !deskripsi) {
       return NextResponse.json({
         success: false,
-        message: "Field wajib tidak boleh kosong: nama, kategori, deskripsi, tahun_mulai, lokasi"
+        message: "Field wajib tidak boleh kosong: nama, kategori, deskripsi"
       }, { status: 400 });
     }
 
-    // Cek potensi exists
-    const existingPotensi = await Potensi.findById(id);
-    if (!existingPotensi) {
+
+    // Validasi kategori
+    const validKategori = [
+      "Pemerintahan", "Pendidikan", "Kesehatan", "Keagamaan", 
+      "Sosial", "Ekonomi", "Keamanan", "Budaya", 
+      "Lingkungan", "Pemuda", "Perempuan", "Lainnya"
+    ];
+    
+    if (!validKategori.includes(kategori)) {
       return NextResponse.json({
         success: false,
-        message: "Data potensi tidak ditemukan"
+        message: "Kategori tidak valid"
+      }, { status: 400 });
+    }
+
+    // Cek lembaga exists
+    const existingLembaga = await Lembaga.findById(id);
+    if (!existingLembaga) {
+      return NextResponse.json({
+        success: false,
+        message: "Data lembaga tidak ditemukan"
       }, { status: 404 });
     }
 
-    let fotoUrl = existingPotensi.foto;
+    let fotoUrl = existingLembaga.foto;
 
     // Hapus foto lama jika di-request
-    if (removeFoto && existingPotensi.foto) {
+    if (removeFoto && existingLembaga.foto) {
       try {
-        const publicId = extractPublicId(existingPotensi.foto);
-        await cloudinary.uploader.destroy(`potensi-desa/${publicId}`);
+        const publicId = extractPublicId(existingLembaga.foto);
+        await cloudinary.uploader.destroy(`lembaga-desa/${publicId}`);
         fotoUrl = '';
       } catch (cloudErr) {
         console.error("Cloudinary delete error:", cloudErr);
@@ -86,10 +93,10 @@ export async function PUT(request) {
       const base64Image = `data:${foto.type};base64,${buffer.toString('base64')}`;
 
       // Hapus foto lama sebelum upload baru (jika belum dihapus sebelumnya)
-      if (existingPotensi.foto && !removeFoto) {
+      if (existingLembaga.foto && !removeFoto) {
         try {
-          const publicId = extractPublicId(existingPotensi.foto);
-          await cloudinary.uploader.destroy(`potensi-desa/${publicId}`);
+          const publicId = extractPublicId(existingLembaga.foto);
+          await cloudinary.uploader.destroy(`lembaga-desa/${publicId}`);
         } catch (err) {
           console.error("Error deleting old image (optional):", err);
         }
@@ -98,7 +105,7 @@ export async function PUT(request) {
       try {
         const uploadResponse = await cloudinary.uploader.upload(base64Image, {
           resource_type: "image",
-          folder: "potensi-desa",
+          folder: "lembaga-desa",
           transformation: [
             {
               quality: 50, // Compress 50%
@@ -118,27 +125,20 @@ export async function PUT(request) {
       }
     }
 
-    // Update data potensi
+    // Update data lembaga
     const updatedData = {
       nama: nama.trim(),
       kategori: kategori.trim(),
       deskripsi: deskripsi.trim(),
-      tahun_mulai: parseInt(tahun_mulai),
-      lokasi: lokasi.trim(),
       foto: fotoUrl,
-      maps_link: maps_link.trim(),
-      shopee_link: shopee_link.trim(),
-      facebook_link: facebook_link.trim(),
-      instagram_link: instagram_link.trim(),
-      whatsapp_link: whatsapp_link.trim(),
     };
 
-    const updatedPotensi = await Potensi.findByIdAndUpdate(id, updatedData, {
+    const updatedLembaga = await Lembaga.findByIdAndUpdate(id, updatedData, {
       new: true,
       runValidators: true,
     });
 
-    if (!updatedPotensi) {
+    if (!updatedLembaga) {
       return NextResponse.json({
         success: false,
         message: "Update failed"
@@ -147,8 +147,8 @@ export async function PUT(request) {
 
     return NextResponse.json({
       success: true,
-      message: "Data potensi berhasil diupdate",
-      data: updatedPotensi,
+      message: "Data lembaga berhasil diupdate",
+      data: updatedLembaga,
     });
 
   } catch (e) {
@@ -159,6 +159,8 @@ export async function PUT(request) {
       message = Object.values(e.errors).map(err => err.message).join(", ");
     } else if (e.name === "CastError") {
       message = `Invalid ID: ${e.value}`;
+    } else if (e.code === 11000) {
+      message = "Data dengan nama yang sama sudah ada";
     }
 
     return NextResponse.json({

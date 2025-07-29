@@ -202,24 +202,18 @@ export default function BeritaPage() {
                 </div>
               </div>
 
-              {/* Featured Image */}
-              {berita.image ? (
-                <div className="relative h-64 md:h-96 lg:h-[500px] w-full">
-                  <Image
-                    src={berita.image}
-                    alt={berita.name || "Berita image"}
-                    fill
-                    className="object-cover"
-                    priority
-                    sizes="(max-width: 768px) 100vw, 800px"
-                  />
-                </div>
-              ) : (
-                <div className="h-64 md:h-96 lg:h-[500px] bg-gray-200 flex items-center justify-center">
-                  <span className="text-gray-400 text-lg">Image</span>
-                </div>
-              )}
-
+              <div className="w-full flex justify-center bg-gray-100">
+              <div className="relative" style={{ maxWidth: "100%" }}>
+                <Image
+                  src={berita.image}
+                  alt={berita.name || "Berita image"}
+                  width={berita.width || 850} // kalau tersedia
+                  height={berita.height || 600}
+                  className="object-contain"
+                  priority
+                />
+              </div>
+            </div>
               {/* Article Body */}
               <div className="p-4 md:p-6">
                  {/* Left side - Author Info */}

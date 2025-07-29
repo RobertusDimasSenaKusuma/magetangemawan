@@ -1,6 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import Image from "next/image";
+import logoImage from "../../../assets/logo2.jpg"; 
 
 export default function AdminSidebar({
   currentSelectedTab,
@@ -15,30 +17,92 @@ export default function AdminSidebar({
     {
       id: "project",
       label: "Berita & Artikel",
-      icon: "📁",
+      icon: (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9.5a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
+        </svg>
+      ),
       color: "indigo",
-      description: "kelola berita & artikel",
     },
     {
       id: "potensi",
-      label: "kelola potensi",
-      icon: "📁",
+      label: "Kelola Potensi",
+      icon: (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+        </svg>
+      ),
       color: "indigo",
-      description: "kelola potensi desa",
+    },
+    {
+      id: "prasarana",
+      label: "Kelola Prasarana",
+      icon: (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+        </svg>
+      ),
+      color: "indigo",
+    },
+    {
+      id: "lembaga",
+      label: "Kelola Lembaga",
+      icon: (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+        </svg>
+      ),
+      color: "indigo",
+    },
+    {
+      id: "kegiatan",
+      label: "Kelola Kegiatan",
+      icon: (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+        </svg>
+      ),
+      color: "indigo",
     },
     {
       id: "contact",
       label: "Saran & Masukan",
-      icon: "📧",
+      icon: (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+        </svg>
+      ),
       color: "indigo",
-      description: "kelola saran",
     },
   ];
+
+  // Load active tab from localStorage on component mount
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const savedTab = localStorage.getItem('activeTab');
+      if (savedTab && menuItems.find(item => item.id === savedTab)) {
+        setCurrentSelectedTab(savedTab);
+      }
+    }
+  }, [setCurrentSelectedTab]);
+
+  // Save active tab to localStorage whenever it changes
+  useEffect(() => {
+    if (typeof window !== 'undefined' && currentSelectedTab) {
+      localStorage.setItem('activeTab', currentSelectedTab);
+    }
+  }, [currentSelectedTab]);
 
   const handleTabChange = (tabId) => {
     setCurrentSelectedTab(tabId);
     resetFormDatas();
     setUpdate(false);
+    
+    // Save the selected tab to localStorage
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('activeTab', tabId);
+    }
+    
     if (window.innerWidth < 768) {
       setIsSidebarOpen(false);
     }
@@ -47,6 +111,10 @@ export default function AdminSidebar({
   const handleLogout = () => {
     setAuthUser(false);
     sessionStorage.removeItem("authUser");
+    // Clear active tab on logout
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('activeTab');
+    }
   };
 
   const toggleSidebar = () => {
@@ -98,9 +166,21 @@ export default function AdminSidebar({
         {/* Sidebar Header */}
         <div className="flex items-center p-6 border-b border-gray-700">
           <div className="flex items-center space-x-3">
+            {/* Logo */}
+            <div className="flex-shrink-0">
+              <Image 
+                src={logoImage}
+                alt="Logo Desa Sumbersawit" 
+                width={40}
+                height={40}
+                className="rounded-lg object-contain"
+              />
+            </div>
+            {/* Text Content */}
             <div>
-              <h2 className="text-xl font-bold text-white">Admin Panel</h2>
-              <p className="text-sm text-gray-400">Dashboard v3.0</p>
+              <h2 className="text-lg font-bold text-white leading-tight">Admin Panel</h2>
+              <p className="text-xs text-gray-400 leading-tight mt-2">Desa Sumbersawit</p>
+              <p className="text-xs text-gray-400 leading-tight mt-1">KKN-PPM UGM 2025 </p>
             </div>
           </div>
         </div>
@@ -108,7 +188,7 @@ export default function AdminSidebar({
         {/* Navigation Menu */}
         <nav className="py-6 px-4">
           <div className="space-y-3">
-            <div className="text-xs font-semibold text-gray-400 uppercase px-3 mb-4 tracking-wider">
+            <div className="text-xs font-semibold text-gray-400 uppercase px-3 mb-4 tracking-wider leading-tight">
               Navigation
             </div>
             {menuItems.map((item) => (
@@ -133,35 +213,29 @@ export default function AdminSidebar({
                 />
                 
                 {/* Icon with active indicator */}
-                <div className="relative">
-                  <span className={`
-                    text-xl transition-all duration-200
+                <div className="relative flex-shrink-0">
+                  <div className={`
+                    transition-all duration-200
                     ${currentSelectedTab === item.id ? 'scale-110' : 'group-hover:scale-110'}
                   `}>
                     {item.icon}
-                  </span>
+                  </div>
                   {currentSelectedTab === item.id && (
                     <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-300 rounded-full animate-pulse"></div>
                   )}
                 </div>
                 
-                <div className="flex-1">
+                <div className="flex-1 min-w-0">
                   <div className={`
-                    text-base font-semibold transition-colors duration-200
+                    text-sm font-semibold transition-colors duration-200 leading-tight truncate
                     ${currentSelectedTab === item.id ? 'text-white' : 'text-gray-300 group-hover:text-white'}
                   `}>
                     {item.label}
                   </div>
-                  <div className={`
-                    text-sm transition-colors duration-200
-                    ${currentSelectedTab === item.id ? 'text-green-200' : 'text-gray-400 group-hover:text-gray-300'}
-                  `}>
-                    {item.description}
-                  </div>
                 </div>
                 
                 {/* Right indicator */}
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-2 flex-shrink-0">
                   {currentSelectedTab === item.id && (
                     <div className="flex items-center space-x-1">
                       <div className="w-2 h-2 bg-green-300 rounded-full"></div>
@@ -199,56 +273,22 @@ export default function AdminSidebar({
           </div>
         </nav>
 
-        {/* Quick Stats or Additional Info */}
-        <div className="px-4 py-3">
-          <div className="bg-gradient-to-r from-green-600/20 to-emerald-600/20 rounded-lg p-4 border border-green-500/30">
-            <div className="flex items-center space-x-2">
-              <span className="text-lg">📊</span>
-              <div>
-                <p className="text-sm font-medium text-white">System Status</p>
-                <p className="text-xs text-green-400">All systems operational</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
         {/* User Profile Section */}
         <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-700 bg-white-500">
-          <div className="bg-gray-700/50 rounded-lg p-4 mb-4 backdrop-blur-sm">
-            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-gradient-to-r from-green-600 to-emerald-600 rounded-lg flex items-center justify-center shadow-md">
-                <span className="text-white text-lg">👨‍💻</span>
-              </div>
-              <div className="flex-1">
-                <p className="text-base font-semibold text-white truncate">Admin User</p>
-                <p className="text-sm text-gray-400 truncate">admin@example.com</p>
-              </div>
-            </div>
-          </div>
-
           {/* Logout Button */}
           <button
             onClick={handleLogout}
             className="w-full flex items-center space-x-3 p-3 rounded-lg text-left text-red-400 hover:bg-red-600/20 hover:text-red-300 transition-all duration-200 group"
           >
-            <span className="text-xl group-hover:scale-110 transition-transform duration-200">🚪</span>
-            <div className="flex-1">
-              <span className="text-base font-semibold">Logout</span>
-              <div className="text-sm text-gray-400 group-hover:text-gray-300">Sign out</div>
+            <div className="flex-shrink-0">
+              <svg className="w-5 h-5 group-hover:scale-110 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+              </svg>
             </div>
-            <svg 
-              className="w-4 h-4 text-red-500 group-hover:text-red-400 transition-colors duration-200" 
-              fill="none" 
-              stroke="currentColor" 
-              viewBox="0 0 24 24"
-            >
-              <path 
-                strokeLinecap="round" 
-                strokeLinejoin="round" 
-                strokeWidth={2} 
-                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" 
-              />
-            </svg>
+            <div className="flex-1 min-w-0">
+              <span className="text-sm font-semibold leading-tight">Logout</span>
+              <div className="text-xs text-gray-400 group-hover:text-gray-300 leading-tight">Sign out</div>
+            </div>
           </button>
         </div>
       </div>

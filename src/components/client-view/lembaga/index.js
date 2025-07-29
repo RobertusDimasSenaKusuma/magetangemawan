@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { ArrowRight, Building2, Users, Heart, Shield, Settings, School, Briefcase } from 'lucide-react';
+import Link from 'next/link';
+import { ArrowRight, Building2, Users, Heart, Shield, Settings, School, Briefcase, X } from 'lucide-react';
 
 // Icon mapping for different lembaga categories
 const getCategoryIcon = (kategori) => {
@@ -48,35 +49,77 @@ export default function LembagaComponent() {
 
   // Fetch JSON data when component mounts
   useEffect(() => {
-    async function fetchData() {
+    const fetchData = async () => {
       try {
         setLoading(true);
-        const response = await fetch('/data/lembaga.json');
+        setError(null);
+        
+        const response = await fetch('/api/lembaga/get/');
+        
         if (!response.ok) {
-          throw new Error(`Failed to fetch data: ${response.status} ${response.statusText}`);
+          const errorText = await response.text();
+          throw new Error(`HTTP ${response.status}: ${response.statusText}. ${errorText}`);
         }
+        
+        const contentType = response.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+          throw new Error('Response is not valid JSON');
+        }
+        
         const data = await response.json();
         
-        if (!data || !data.lembaga || !Array.isArray(data.lembaga)) {
-          throw new Error('Invalid data format: lembaga array not found');
+        // Validasi struktur data yang lebih fleksibel
+        if (!data) {
+          throw new Error('Response data is null or undefined');
         }
         
-        setContentData(data);
-        setError(null);
+        // Coba beberapa kemungkinan struktur data
+        let lembagaArray = null;
+        if (data.lembaga && Array.isArray(data.lembaga)) {
+          lembagaArray = data.lembaga;
+        } else if (Array.isArray(data)) {
+          lembagaArray = data;
+        } else if (data.data && Array.isArray(data.data)) {
+          lembagaArray = data.data;
+        } else if (data.result && Array.isArray(data.result)) {
+          lembagaArray = data.result;
+        }
+        
+        if (!lembagaArray) {
+          throw new Error('Invalid data format: lembaga array not found in response');
+        }
+        
+        // Validasi bahwa array tidak kosong
+        if (lembagaArray.length === 0) {
+          console.warn('Lembaga array is empty');
+        }
+        
+        // Pastikan setiap item memiliki properti yang diperlukan
+        const validatedData = lembagaArray.map((item, index) => ({
+          id: item.id || item._id || index,
+          nama: item.nama || 'Nama tidak tersedia',
+          deskripsi: item.deskripsi || 'Deskripsi tidak tersedia',
+          kategori: item.kategori || 'Lainnya',
+          foto: item.foto || 'https://via.placeholder.com/400x300/10b981/ffffff?text=Foto+Tidak+Tersedia'
+        }));
+        
+        setContentData({
+          lembaga: validatedData
+        });
+        
       } catch (err) {
         console.error('Error fetching lembaga data:', err);
-        setError(err.message);
+        setError(`Gagal memuat data: ${err.message}`);
       } finally {
         setLoading(false);
       }
-    }
+    };
     
     fetchData();
   }, []);
 
-  // Handle "Learn more" button click - Navigate to detail page
-  const handleLearnMore = (item) => {
-    window.location.href = `/detaillembaga?id=${item.id}`;
+  // Handle link click with alert
+  const handleLinkClick = (item) => {
   };
 
   // Loading state
@@ -244,13 +287,14 @@ export default function LembagaComponent() {
 
                   {/* Baca Selengkapnya Button */}
                   <div className="pt-3 border-t border-gray-100">
-                    <button
-                      onClick={() => handleLearnMore(item)}
+                    <Link
+                      href={`/detaillembaga?id=${item.id || item._id}`}
+                      onClick={() => handleLinkClick(item)}
                       className="w-full bg-green1-500 text-white-500 font-semibold text-sm py-3 px-4 rounded-xl hover:bg-emerald-700 transition-all duration-300 flex items-center justify-center gap-2 group/btn shadow-md hover:shadow-lg transform hover:scale-105"
                     >
                       Baca Selengkapnya
                       <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform duration-300" />
-                    </button>
+                    </Link>
                   </div>
                 </div>
               </div>

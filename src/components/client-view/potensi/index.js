@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, ArrowRight, Palmtree, ShoppingBag, Tractor, Beef, Building2, MapPin, History, MessageCircle, Facebook, Instagram, ExternalLink,Calendar } from 'lucide-react';
 
@@ -100,37 +101,86 @@ export default function PotensiComponent() {
     }
   };
 
+  
   // Fetch JSON data when component mounts
   useEffect(() => {
-    async function fetchData() {
+    const fetchData = async () => {
       try {
         setLoading(true);
-        const response = await fetch('/data/potensi.json');
+        setError(null);
+        
+        const response = await fetch('/api/potensi/get/');
+        
         if (!response.ok) {
-          throw new Error(`Failed to fetch data: ${response.status} ${response.statusText}`);
+          const errorText = await response.text();
+          throw new Error(`HTTP ${response.status}: ${response.statusText}. ${errorText}`);
         }
+        
+        const contentType = response.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+          throw new Error('Response is not valid JSON');
+        }
+        
         const data = await response.json();
         
-        if (!data || !data.potensi || !Array.isArray(data.potensi)) {
-          throw new Error('Invalid data format: potensi array not found');
+        // Validasi struktur data yang lebih fleksibel
+        if (!data) {
+          throw new Error('Response data is null or undefined');
         }
         
-        setContentData(data);
-        setError(null);
+        // Coba beberapa kemungkinan struktur data
+        let potensiArray = null;
+        if (data.potensi && Array.isArray(data.potensi)) {
+          potensiArray = data.potensi;
+        } else if (Array.isArray(data)) {
+          potensiArray = data;
+        } else if (data.data && Array.isArray(data.data)) {
+          potensiArray = data.data;
+        } else if (data.result && Array.isArray(data.result)) {
+          potensiArray = data.result;
+        }
+        
+        if (!potensiArray) {
+          throw new Error('Invalid data format: potensi array not found in response');
+        }
+        
+        // Validasi bahwa array tidak kosong
+        if (potensiArray.length === 0) {
+          console.warn('Potensi array is empty');
+        }
+        
+        // Pastikan setiap item memiliki properti yang diperlukan
+        const validatedData = potensiArray.map((item, index) => ({
+          id: item.id || item._id || index,
+          nama: item.nama || 'Nama tidak tersedia',
+          deskripsi: item.deskripsi || 'Deskripsi tidak tersedia',
+          kategori: item.kategori || 'Lainnya',
+          foto: item.foto || 'https://via.placeholder.com/400x300/10b981/ffffff?text=Foto+Tidak+Tersedia',
+          tahun_mulai: item.tahun_mulai || 'Tidak diketahui',
+          maps_link: item.maps_link || '',
+          shopee_link: item.shopee_link || '',
+          facebook_link: item.facebook_link || '',
+          instagram_link: item.instagram_link || '',
+          whatsapp_link: item.whatsapp_link || ''
+        }));
+        
+        setContentData({
+          potensi: validatedData
+        });
+        
       } catch (err) {
         console.error('Error fetching potensi data:', err);
-        setError(err.message);
+        setError(`Gagal memuat data: ${err.message}`);
       } finally {
         setLoading(false);
       }
-    }
+    };
     
     fetchData();
   }, []);
 
-  // Handle "Learn more" button click - Navigate to detail page
-  const handleLearnMore = (item) => {
-    window.location.href = `/detailpotensi?id=${item.id}`;
+  // Handle link click with alert
+  const handleLinkClick = (item) => {
   };
 
   // Loading state
@@ -202,7 +252,7 @@ export default function PotensiComponent() {
   };
 
   // Handle link clicks to prevent event bubbling
-  const handleLinkClick = (e) => {
+  const handleSocialLinkClick = (e) => {
     e.stopPropagation();
   };
 
@@ -298,7 +348,7 @@ export default function PotensiComponent() {
                         target="_blank"
                         rel="noopener noreferrer"
                         className="w-10 h-10 bg-white-500 hover:bg-red-600 rounded-full flex items-center justify-center shadow-lg transition-all duration-300 transform hover:scale-110"
-                        onClick={handleLinkClick}
+                        onClick={handleSocialLinkClick}
                       >
                         <MapPin className="w-5 h-5 text-orange-500" />
                       </a>
@@ -325,7 +375,7 @@ export default function PotensiComponent() {
 
                   {/* Social Media Preview for UMKM */}
                   {item.kategori?.toLowerCase() === 'umkm' && (
-                    <div className="mb-4" onClick={handleLinkClick}>
+                    <div className="mb-4" onClick={handleSocialLinkClick}>
                       <div className="flex gap-2 flex-wrap">
                         {item.shopee_link && (
                           <a 
@@ -373,13 +423,14 @@ export default function PotensiComponent() {
 
                  {/* Baca Selengkapnya Button */}
                 <div className="pt-3 border-t border-gray-100">
-                  <button
-                    onClick={() => handleLearnMore(item)}
-                    className="w-full bg-green1-500 text-white-500 font-semibold text-sm py-3 px-4 rounded-xl hover:bg-emerald-700 transition-all duration-300 flex items-center justify-center gap-2 group/btn shadow-md hover:shadow-lg transform hover:scale-105"
+                  <Link
+                    href={`/detailpotensi?id=${item.id || item._id}`}
+                    onClick={() => handleLinkClick(item)}
+                    className="w-full bg-green1-500 hover:bg-green1-500 text-white-500 font-semibold text-sm py-3 px-4 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 group/btn shadow-md hover:shadow-lg transform hover:scale-105"
                   >
                     Baca Selengkapnya
                     <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform duration-300" />
-                  </button>
+                  </Link>
                 </div>
 
                 </div>

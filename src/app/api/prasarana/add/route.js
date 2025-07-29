@@ -1,6 +1,6 @@
-// api/potensi/add/route.js
+// api/prasarana/add/route.js
 import connectToDB from "@/database";
-import Potensi from "@/models/Potensi";
+import Prasarana from "@/models/Prasarana";
 import { NextResponse } from "next/server";
 import { v2 as cloudinary } from 'cloudinary';
 
@@ -21,45 +21,41 @@ export async function POST(req) {
     const nama = formData.get('nama');
     const kategori = formData.get('kategori');
     const deskripsi = formData.get('deskripsi');
-    const tahun_mulai = formData.get('tahun_mulai');
+    const tahun_pembangunan = formData.get('tahun_pembangunan');
     const lokasi = formData.get('lokasi');
-    const foto = formData.get('foto');
+    const fotoFile = formData.get('foto');
     
-    // Data opsional (sosial media, e-commerce, maps)
+    // Data opsional
     const maps_link = formData.get('maps_link') || '';
-    const shopee_link = formData.get('shopee_link') || '';
-    const facebook_link = formData.get('facebook_link') || '';
-    const instagram_link = formData.get('instagram_link') || '';
-    const whatsapp_link = formData.get('whatsapp_link') || '';
 
     // Validasi field wajib
-    if (!nama || !kategori || !deskripsi || !tahun_mulai || !lokasi) {
+    if (!nama || !kategori || !deskripsi || !tahun_pembangunan || !lokasi) {
       return NextResponse.json({
         success: false,
-        message: "Field wajib tidak boleh kosong: nama, kategori, deskripsi, tahun_mulai, lokasi"
+        message: "Field wajib tidak boleh kosong: nama, kategori, deskripsi, tahun_pembangunan, lokasi"
       }, { status: 400 });
     }
 
-    let fotoUrl = '';
+    let foto = '';
 
-    if (foto && foto.size > 0) {
-    const bytes = await foto.arrayBuffer();
-    const buffer = Buffer.from(bytes);
-    const base64Image = `data:${foto.type};base64,${buffer.toString('base64')}`;
-  
-    try {
-      const uploadResponse = await cloudinary.uploader.upload(base64Image, {
-        resource_type: "image",
-        folder: "potensi-desa", // Folder di Cloudinary
-        transformation: [
-          {
-            quality: 50, // Compress 50%
-            format: "auto" // Format optimal otomatis (WebP, AVIF, dll)
-          }
-        ]
-      });
+    if (fotoFile && fotoFile.size > 0) {
+      const bytes = await fotoFile.arrayBuffer();
+      const buffer = Buffer.from(bytes);
+      const base64Image = `data:${fotoFile.type};base64,${buffer.toString('base64')}`;
+      
+      try {
+        const uploadResponse = await cloudinary.uploader.upload(base64Image, {
+          resource_type: "image",
+          folder: "prasarana-desa", // Folder di Cloudinary untuk prasarana
+          transformation: [
+            {
+              quality: 50, // Compress 50%
+              format: "auto" // Format optimal otomatis (WebP, AVIF, dll)
+            }
+          ]
+        });
         
-        fotoUrl = uploadResponse.secure_url;
+        foto = uploadResponse.secure_url;
       } catch (cloudErr) {
         console.error("Cloudinary upload error:", cloudErr);
         return NextResponse.json({
@@ -71,28 +67,24 @@ export async function POST(req) {
     }
 
     // Siapkan data untuk disimpan
-    const potensiData = {
+    const prasaranData = {
       nama,
       kategori,
       deskripsi,
-      foto: fotoUrl,
-      tahun_mulai: parseInt(tahun_mulai),
+      foto,
+      tahun_pembangunan,
       lokasi,
       // Field opsional
-      maps_link,
-      shopee_link,
-      facebook_link,
-      instagram_link,
-      whatsapp_link
+      maps_link
     };
 
     // Simpan data ke database
-    const saveData = await Potensi.create(potensiData);
+    const saveData = await Prasarana.create(prasaranData);
 
     if (saveData) {
       return NextResponse.json({
         success: true,
-        message: "Data potensi berhasil disimpan",
+        message: "Data prasarana berhasil disimpan",
         data: saveData
       });
     } else {
@@ -104,7 +96,7 @@ export async function POST(req) {
 
   } catch (e) {
     console.log("Error:", e);
-
+    
     return NextResponse.json({
       success: false,
       message: "Terjadi kesalahan server",

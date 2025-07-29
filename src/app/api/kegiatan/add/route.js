@@ -1,0 +1,99 @@
+// api/kegiatan/add/route.js
+import connectToDB from "@/database";
+import Kegiatan from "@/models/Kegiatan";
+import { NextResponse } from "next/server";
+import { v2 as cloudinary } from 'cloudinary';
+
+// Konfigurasi Cloudinary
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+export const dynamic = "force-dynamic";
+
+export async function POST(req) {
+  try {
+    await connectToDB();
+    
+    const formData = await req.formData();
+    const nama = formData.get('nama');
+    const kategori = formData.get('kategori');
+    const deskripsi = formData.get('deskripsi');
+    const tahun = formData.get('tahun');
+    const fotoFile = formData.get('foto');
+    
+    // Validasi field wajib
+    if (!nama || !kategori || !deskripsi || !tahun) {
+      return NextResponse.json({
+        success: false,
+        message: "Field wajib tidak boleh kosong: nama, kategori, deskripsi, tahun"
+      }, { status: 400 });
+    }
+
+    let foto = '';
+
+    if (fotoFile && fotoFile.size > 0) {
+      const bytes = await fotoFile.arrayBuffer();
+      const buffer = Buffer.from(bytes);
+      const base64Image = `data:${fotoFile.type};base64,${buffer.toString('base64')}`;
+      
+      try {
+        const uploadResponse = await cloudinary.uploader.upload(base64Image, {
+          resource_type: "image",
+          folder: "kegiatan-desa", // Folder di Cloudinary untuk kegiatan
+          transformation: [
+            {
+              quality: 50, // Compress 50%
+              format: "auto" // Format optimal otomatis (WebP, AVIF, dll)
+            }
+          ]
+        });
+        
+        foto = uploadResponse.secure_url;
+      } catch (cloudErr) {
+        console.error("Cloudinary upload error:", cloudErr);
+        return NextResponse.json({
+          success: false,
+          message: "Image upload failed",
+          error: cloudErr.message
+        });
+      }
+    }
+
+    // Siapkan data untuk disimpan
+    const kegiatanData = {
+      nama,
+      kategori,
+      deskripsi,
+      foto,
+      tahun: parseInt(tahun) // Pastikan tahun berupa number
+    };
+
+    // Simpan data ke database
+    const saveData = await Kegiatan.create(kegiatanData);
+
+    if (saveData) {
+      return NextResponse.json({
+        success: true,
+        message: "Data kegiatan berhasil disimpan",
+        data: saveData
+      });
+    } else {
+      return NextResponse.json({
+        success: false,
+        message: "Terjadi kesalahan saat menyimpan data"
+      });
+    }
+   
+  } catch (e) {
+    console.log("Error:", e);
+    
+    return NextResponse.json({
+      success: false,
+      message: "Terjadi kesalahan server",
+      error: e.message
+    }, { status: 500 });
+  }
+}

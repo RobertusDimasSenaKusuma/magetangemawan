@@ -3,7 +3,7 @@
 import { useSearchParams } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Building2, Palmtree, ShoppingBag, Tractor, Beef, MapPin, Facebook, Instagram, MessageCircle, ArrowLeft} from 'lucide-react';
+import { Building2, Palmtree, ShoppingBag, Tractor, Beef, MapPin, Facebook, Instagram, MessageCircle, ArrowLeft, History} from 'lucide-react';
 
 // Icon mapping for different categories
 const getCategoryIcon = (kategori) => {
@@ -16,6 +16,10 @@ const getCategoryIcon = (kategori) => {
       return Beef;
     case 'umkm':
       return ShoppingBag;
+    case 'situs':
+    case 'sejarah':
+    case 'situs dan sejarah':
+      return History;
     default:
       return Building2;
   }
@@ -39,7 +43,7 @@ const SimpleImage = ({ src, alt, className, onError }) => {
   if (hasError || !fixedSrc) {
     return (
       <div className={`${className} bg-gray-200 flex items-center justify-center`}>
-        <span className="text-gray-400">Foto tidak tersedia</span>
+        <span className="text-gray-400 text-sm">Foto tidak tersedia</span>
       </div>
     );
   }
@@ -80,67 +84,128 @@ export default function DetailPotensiPage() {
   const fetchPotensiDetail = async (potensiId) => {
     try {
       setLoading(true);
+      setError(null);
       
       console.log('Fetching potensi with ID:', potensiId);
       
-      // Fetch data from potensi.json
-      const response = await fetch('/data/potensi.json');
+      // Fetch data from API
+      const response = await fetch('/api/potensi/get/', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        cache: 'no-cache'
+      });
       
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorText = await response.text();
+        console.error('API Response Error:', response.status, errorText);
+        throw new Error(`Gagal mengambil data: ${response.status} - ${errorText}`);
       }
       
       const data = await response.json();
-      console.log('Fetched data:', data);
+      console.log('Full API Response:', data);
       
-      // Check if data structure is correct
-      if (!data || !data.potensi || !Array.isArray(data.potensi)) {
-        console.error('Invalid data structure:', data);
-        throw new Error('Data potensi tidak valid atau tidak ditemukan');
+      // Handle different possible data structures
+      let potensiArray = [];
+      
+      if (data.potensi && Array.isArray(data.potensi)) {
+        potensiArray = data.potensi;
+      } else if (data.data && Array.isArray(data.data)) {
+        potensiArray = data.data;
+      } else if (Array.isArray(data)) {
+        potensiArray = data;
+      } else if (data.result && Array.isArray(data.result)) {
+        potensiArray = data.result;
+      } else {
+        console.error('Unexpected data structure:', data);
+        throw new Error('Format data tidak sesuai - tidak ditemukan array potensi');
       }
       
-      console.log('Available potensi:', data.potensi);
+      console.log('Potensi array length:', potensiArray.length);
+      console.log('Available potensi IDs:', potensiArray.map(item => ({ 
+        id: item.id || item._id, 
+        nama: item.nama 
+      })));
       
-      // Fixed ID comparison to handle large numbers properly
-      // Convert both IDs to strings for safe comparison
-      const foundPotensi = data.potensi.find(item => {
-        const itemId = String(item.id);
-        const searchId = String(potensiId);
-        console.log('Comparing:', itemId, 'with', searchId);
-        return itemId === searchId;
+      // Enhanced ID comparison - check both id and _id fields
+      const foundPotensi = potensiArray.find(item => {
+        const itemId = item.id || item._id;
+        const matchesId = itemId == potensiId;
+        const matchesIdStrict = String(itemId) === String(potensiId);
+        
+        console.log(`Comparing: ${itemId} with ${potensiId} - loose: ${matchesId}, strict: ${matchesIdStrict}`);
+        
+        return matchesId || matchesIdStrict;
       });
       
       console.log('Found potensi:', foundPotensi);
       
       if (!foundPotensi) {
+        console.error(`Potensi dengan ID ${potensiId} tidak ditemukan`);
+        console.error('Available IDs in data:', potensiArray.map(p => p.id || p._id));
         throw new Error(`Potensi dengan ID ${potensiId} tidak ditemukan`);
       }
       
-      setPotensi(foundPotensi);
+      // Normalize the found potensi data
+      const normalizedPotensi = {
+        id: foundPotensi.id || foundPotensi._id,
+        nama: foundPotensi.nama || 'Nama tidak tersedia',
+        deskripsi: foundPotensi.deskripsi || 'Deskripsi tidak tersedia',
+        kategori: foundPotensi.kategori || 'Lainnya',
+        foto: foundPotensi.foto || 'https://via.placeholder.com/400x300/10b981/ffffff?text=Foto+Tidak+Tersedia',
+        tahun_mulai: foundPotensi.tahun_mulai || 'Tidak diketahui',
+        lokasi: foundPotensi.lokasi || 'Desa Sumbersawit',
+        maps_link: foundPotensi.maps_link || '',
+        shopee_link: foundPotensi.shopee_link || '',
+        facebook_link: foundPotensi.facebook_link || '',
+        instagram_link: foundPotensi.instagram_link || '',
+        whatsapp_link: foundPotensi.whatsapp_link || ''
+      };
       
-      // Get related potensi (6 other potensi for sidebar) - DIFFERENT CATEGORIES ONLY
-      // Filter out current potensi AND same category items
-      const related = data.potensi
-        .filter(item => 
-          String(item.id) !== String(foundPotensi.id) &&
-          item.kategori?.toLowerCase() !== foundPotensi.kategori?.toLowerCase()
-        )
-        .slice(0, 6);
+      setPotensi(normalizedPotensi);
+      
+      // Get related potensi (different categories only)
+      const related = potensiArray
+        .filter(item => {
+          const itemId = item.id || item._id;
+          return itemId != normalizedPotensi.id &&
+                 item.kategori?.toLowerCase() !== normalizedPotensi.kategori?.toLowerCase();
+        })
+        .slice(0, 6)
+        .map(item => ({
+          id: item.id || item._id,
+          nama: item.nama || 'Nama tidak tersedia',
+          deskripsi: item.deskripsi || 'Deskripsi tidak tersedia',
+          kategori: item.kategori || 'Lainnya',
+          foto: item.foto || 'https://via.placeholder.com/400x300/10b981/ffffff?text=Foto+Tidak+Tersedia'
+        }));
       
       setRelatedPotensi(related);
 
-      // Get all potensi with same category (no limit for pagination)
-      const sameCategoryItems = data.potensi
-        .filter(item => 
-          String(item.id) !== String(foundPotensi.id) &&
-          item.kategori?.toLowerCase() === foundPotensi.kategori?.toLowerCase()
-        );
+      // Get same category potensi
+      const sameCategoryItems = potensiArray
+        .filter(item => {
+          const itemId = item.id || item._id;
+          return itemId != normalizedPotensi.id &&
+                 item.kategori?.toLowerCase() === normalizedPotensi.kategori?.toLowerCase();
+        })
+        .map(item => ({
+          id: item.id || item._id,
+          nama: item.nama || 'Nama tidak tersedia',
+          deskripsi: item.deskripsi || 'Deskripsi tidak tersedia',
+          kategori: item.kategori || 'Lainnya',
+          foto: item.foto || 'https://via.placeholder.com/400x300/10b981/ffffff?text=Foto+Tidak+Tersedia'
+        }));
       
       setSameCategory(sameCategoryItems);
       
+      console.log('Related potensi:', related.length);
+      console.log('Same category potensi:', sameCategoryItems.length);
+      
     } catch (err) {
       console.error('Error fetching potensi:', err);
-      setError(err.message);
+      setError(err.message || 'Terjadi kesalahan saat mengambil data');
     } finally {
       setLoading(false);
     }
@@ -159,11 +224,16 @@ export default function DetailPotensiPage() {
 
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
-    // Scroll to same category section
     document.getElementById('same-category-section')?.scrollIntoView({ 
       behavior: 'smooth',
       block: 'start'
     });
+  };
+
+  const handleRetry = () => {
+    if (id) {
+      fetchPotensiDetail(id);
+    }
   };
 
   if (loading) {
@@ -171,7 +241,8 @@ export default function DetailPotensiPage() {
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
           <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-green-500 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading...</p>
+          <p className="mt-4 text-gray-600">Memuat data potensi...</p>
+         
         </div>
       </div>
     );
@@ -180,10 +251,24 @@ export default function DetailPotensiPage() {
   if (error) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-red-600 mb-4">Error</h1>
-          <p className="text-gray-600 mb-4">{error}</p>
-          
+        <div className="text-center max-w-md mx-auto p-6">
+          <h1 className="text-2xl font-bold text-red-600 mb-4">Terjadi Kesalahan</h1>
+          <p className="text-gray-600 mb-2">{error}</p>
+          <p className="text-sm text-gray-500 mb-6">ID yang dicari: {id}</p>
+          <div className="space-y-3">
+            <button
+              onClick={handleRetry}
+              className="w-full bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition-colors"
+            >
+              Coba Lagi
+            </button>
+            <Link 
+              href="/potensi" 
+              className="block w-full bg-green-500 text-white px-6 py-2 rounded-lg hover:bg-green-600 transition-colors text-center"
+            >
+              Kembali ke Daftar Potensi
+            </Link>
+          </div>
         </div>
       </div>
     );
@@ -194,12 +279,13 @@ export default function DetailPotensiPage() {
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-gray-800 mb-4">Potensi Tidak Ditemukan</h1>
-          <p className="text-gray-600 mb-4">Potensi yang Anda cari tidak dapat ditemukan.</p>
+          <p className="text-gray-600 mb-2">Potensi yang Anda cari tidak dapat ditemukan.</p>
+          <p className="text-sm text-gray-500 mb-4">ID: {id}</p>
           <Link 
-            href="/" 
+            href="/potensi" 
             className="inline-block bg-green-500 text-white px-6 py-2 rounded-lg hover:bg-green-600 transition-colors"
           >
-            Kembali ke Daftar Berita
+            Kembali ke Daftar Potensi
           </Link>
         </div>
       </div>
@@ -213,13 +299,12 @@ export default function DetailPotensiPage() {
       {/* Debug Info - Remove this in production */}
       {process.env.NODE_ENV === 'development' && (
         <div className="bg-yellow-100 p-2 text-xs">
-          <p>Debug: ID = {id}, Potensi = {potensi?.nama}</p>
+          <p>Debug: URL ID = {id}, Found ID = {potensi?.id}, Nama = {potensi?.nama}, Kategori = {potensi?.kategori}</p>
         </div>
       )}
-      
 
       {/* Main Content */}
-       <div className="max-w-7xl mx-auto px-4 py-8 mt-8">
+       <div className="max-w-7xl mx-auto px-4 py-8 p-2">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Article Content */}
           <div className="lg:col-span-2">
@@ -274,7 +359,7 @@ export default function DetailPotensiPage() {
                 <div className="bg-blue-50 rounded-lg p-4">
                     <MapPin className="w-6 h-6 text-orange-500 mb-2" />
                     <p className="text-sm text-gray-600">Lokasi</p>
-                    <p className="font-semibold text-blue-600 text-justify break-words">{potensi.lokasi || "Desa"}</p>
+                    <p className="font-semibold text-blue-600 text-justify break-words">{potensi.lokasi || "Desa Sumbersawit"}</p>
                    {/* Maps Link */}
                     {potensi.maps_link && (
                     <div className="bg-white rounded-xl p-2 shadow-sm flex items-center justify-between mt-2">
@@ -284,7 +369,7 @@ export default function DetailPotensiPage() {
                         rel="noopener noreferrer"
                         className="flex items-center gap-2 text-white-500 bg-orange-500 hover:bg-blue-700 transition-colors px-4 py-2 rounded-lg text-sm font-semibold shadow hover:shadow-md"
                         >
-                        <MapPin className="w-5 h-5 text-white" />
+                        <MapPin className="w-5 h-5 text-white-500" />
                         Buka Maps
                         </a>
                     </div>
@@ -300,6 +385,16 @@ export default function DetailPotensiPage() {
                       {potensi.deskripsi || "Deskripsi potensi akan ditampilkan di sini."}
                     </p>
 
+                    {/* Additional Info */}
+                    {potensi.tahun_mulai && (
+                      <div className="bg-gray-50 rounded-lg p-4 mt-4">
+                        <h4 className="text-sm font-semibold text-gray-700 mb-2">Informasi Tambahan:</h4>
+                        <p className="text-sm text-gray-600">
+                          <strong>Tahun Mulai:</strong> {potensi.tahun_mulai}
+                        </p>
+                      </div>
+                    )}
+
                     {/* Social Media Icons */}
                     {(potensi.shopee_link || potensi.facebook_link || potensi.instagram_link || potensi.whatsapp_link) && (
                       <div className="mt-4 pt-4 border-t border-gray-200">
@@ -310,7 +405,7 @@ export default function DetailPotensiPage() {
                               href={potensi.shopee_link}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="w-8 h-8 bg-orange-500 text-white-500 hover:bg-orange-600 rounded-full flex items-center justify-center transition-colors duration-200 shadow-md hover:shadow-lg"
+                              className="w-8 h-8 bg-orange-500 hover:bg-orange-600 rounded-full flex items-center justify-center transition-colors duration-200 shadow-md hover:shadow-lg"
                               title="Shopee"
                             >
                               <ShoppingBag className="w-4 h-4 text-white" />
@@ -321,7 +416,7 @@ export default function DetailPotensiPage() {
                               href={potensi.facebook_link}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="w-8 h-8 bg-blue-500 text-white-500 hover:bg-blue-700 rounded-full flex items-center justify-center transition-colors duration-200 shadow-md hover:shadow-lg"
+                              className="w-8 h-8 bg-blue-500 hover:bg-blue-700 rounded-full flex items-center justify-center transition-colors duration-200 shadow-md hover:shadow-lg"
                               title="Facebook"
                             >
                               <Facebook className="w-4 h-4 text-white" />
@@ -332,7 +427,7 @@ export default function DetailPotensiPage() {
                               href={potensi.instagram_link}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="w-8 h-8 bg-pink-500 text-white-500 hover:bg-pink-600 rounded-full flex items-center justify-center transition-colors duration-200 shadow-md hover:shadow-lg"
+                              className="w-8 h-8 bg-pink-500 hover:bg-pink-600 rounded-full flex items-center justify-center transition-colors duration-200 shadow-md hover:shadow-lg"
                               title="Instagram"
                             >
                               <Instagram className="w-4 h-4 text-white" />
@@ -343,7 +438,7 @@ export default function DetailPotensiPage() {
                               href={potensi.whatsapp_link}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="w-8 h-8 bg-green1-500 text-white-500 hover:bg-green-600 rounded-full flex items-center justify-center transition-colors duration-200 shadow-md hover:shadow-lg"
+                              className="w-8 h-8 bg-green-500 hover:bg-green-600 rounded-full flex items-center justify-center transition-colors duration-200 shadow-md hover:shadow-lg"
                               title="WhatsApp"
                             >
                               <MessageCircle className="w-4 h-4 text-white" />
@@ -423,7 +518,7 @@ export default function DetailPotensiPage() {
                               <div className="flex items-center justify-between">
                                 <Link 
                                   href={`/detailpotensi?id=${item.id}`}
-                                  className="bg-green-500 hover:bg-green1-500 text-white-500 text-xs px-6 py-2 rounded-full transition-colors font-medium"
+                                  className="bg-green1-500 hover:bg-green-600 text-white-500 text-xs px-6 py-2 rounded-full transition-colors font-medium"
                                 >
                                   Lihat Detail
                                 </Link>
@@ -511,8 +606,8 @@ export default function DetailPotensiPage() {
                           {/* Content */}
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center space-x-2 mb-1">
-                              <ItemIcon className="w-3 h-3 text-green1-500" />
-                              <span className="text-xs text-green1-500">{item.kategori}</span>
+                              <ItemIcon className="w-3 h-3 text-green-600" />
+                              <span className="text-xs text-green-600">{item.kategori}</span>
                             </div>
                             <h4 className="font-semibold text-gray-800 mb-2 line-clamp-2 text-sm md:text-base group-hover:text-green-600 transition-colors">
                               {item.nama || "Potensi Lainnya"}
@@ -523,7 +618,7 @@ export default function DetailPotensiPage() {
                             <div className="flex items-center justify-between">
                               <Link 
                                 href={`/detailpotensi?id=${item.id}`}
-                                className="bg-green1-500 hover:bg-green-600 text-white-500 text-xs px-3 py-1 rounded-full transition-colors font-medium"
+                                className="bg-green-500 hover:bg-green-600 text-white text-xs px-3 py-1 rounded-full transition-colors font-medium"
                               >
                                 Lihat Detail
                               </Link>

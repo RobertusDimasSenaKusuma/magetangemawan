@@ -143,14 +143,7 @@ export default function FooterContact() {
                   <MapPin className="w-4 h-4 mr-2 mt-0.5 flex-shrink-0" />
                   <div>
                     <p className="font-medium text-white-500">Address</p>
-                    <p className="text-white-500">Jl. Contoh No. 123<br />Depok, Yogyakarta 55281</p>
-                  </div>
-                </div>
-                <div className="flex items-center text-white-500">
-                  <Mail className="w-4 h-4 mr-2" />
-                  <div>
-                    <p className="font-medium text-white-500">Email</p>
-                    <p className="text-white-500">hello@example.com</p>
+                    <p className="text-white-500">974F+6GG, Mbaran, Sumbersawit<br /> Kec. Sidorejo, Kabupaten Magetan, Jawa Timur 63352</p>
                   </div>
                 </div>
                 <div className="flex items-center text-white-500">
@@ -171,7 +164,7 @@ export default function FooterContact() {
               </h3>
               <div className="bg-white/20 rounded-lg p-3 h-48 flex items-center justify-center relative overflow-hidden">
                 <iframe
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3955.239456123456!2d110.123456!3d-7.789012!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zN8KwNDUnMjEuNiJTIDExMMKwMDcnMjQuMCJF!5e0!3m2!1sen!2sid!4v1623456789!5m2!1sen!2sid"
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3954.3594249304297!2d111.27125017500343!3d-7.644442892371617!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e798d8d99b9a9ef%3A0xd9c43d82daa84138!2sBalai%20DESA%20Sumbersawit!5e0!3m2!1sen!2sid!4v1753754788801!5m2!1sen!2sid"
                   width="100%"
                   height="100%"
                   style={{ border: 0 }}
@@ -186,7 +179,7 @@ export default function FooterContact() {
           {/* Footer Bottom */}
           <div className="mt-6 pt-4 border-t border-white-500">
             <div className="flex flex-col md:flex-row justify-between items-center text-sm text-white-500">
-              <p className="text-white-500">© 2025 Your Company. All rights reserved.</p>
+              <p className="text-white-500">© 2025 KKN-PPM UGM Gemawan Desa Sumbersawit</p>
             </div>
           </div>
         </div>

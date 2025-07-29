@@ -1,9 +1,10 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { FaArrowRight } from "react-icons/fa";
 import { motion } from 'framer-motion';
-import { Building2, Palmtree, ShoppingBag, Tractor, Beef } from 'lucide-react';
+import { ArrowRight,Building2, Palmtree, ShoppingBag, Tractor, Beef } from 'lucide-react';
 
 // Animation Wrapper Component
 const AnimationWrapper = ({ children, className = "" }) => {
@@ -40,49 +41,49 @@ export default function ServicesSection() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Fetch data from data.json
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch('/data/potensi.json');
-        if (!response.ok) {
-          throw new Error('Failed to fetch data.json');
-        }
-        const data = await response.json();
-        
-        // Get representative data for each category (only first item from each category)
-        const categories = {};
-        const representativeData = [];
-        
-        if (data.potensi) {
-          data.potensi.forEach(item => {
-            if (!categories[item.kategori]) {
-              categories[item.kategori] = true;
-              representativeData.push(item);
-            }
-          });
-        }
-        
-        // Limit to 4 items for the services layout (all categories)
-        setPotensiData(representativeData.slice(0, 4));
-        setLoading(false);
-      } catch (err) {
-        setError(err.message);
-        setLoading(false);
+  const fetchData = async () => {
+    try {
+      const response = await fetch('/api/potensi/get/');
+      if (!response.ok) {
+        throw new Error('Failed to fetch data from API');
       }
-    };
-    fetchData();
-  }, []);
+
+      const result = await response.json();
+      const data = result.data; // Ambil data dari key "data"
+
+      // Ambil item per kategori (hanya satu item per kategori)
+      const categories = {};
+      const representativeData = [];
+
+      if (Array.isArray(data)) {
+        data.forEach(item => {
+          if (!categories[item.kategori]) {
+            categories[item.kategori] = true;
+            representativeData.push(item);
+          }
+        });
+      }
+
+      // Batasi hanya 4 item
+      setPotensiData(representativeData.slice(0, 4));
+      setLoading(false);
+    } catch (err) {
+      setError(err.message);
+      setLoading(false);
+    }
+  };
+
+  fetchData();
+}, []);
+
 
   // Handle "View All Services" button click
   const handleViewAllServices = () => {
     window.location.href = '/potensi';
   };
 
-  // Handle "Learn more" button click - Navigate to detail page
-  const handleLearnMore = (item) => {
-    window.location.href = `/detailpotensi?id=${item.id}`;
-  };
+  
 
   // Loading state
   if (loading) {
@@ -182,15 +183,15 @@ export default function ServicesSection() {
                         : item.deskripsi}
                     </p>
 
-                    {/* Learn More Button */}
-                    <div className="text-center">
-                      <button
-                        onClick={() => handleLearnMore(item)}
-                       className="bg-orange-500 hover:bg-orange-500 text-white-500 text-xs px-6 py-2 rounded-full transition-colors font-medium"
-                      >
-                        Baca Selengkapnya
-                      </button>
-                    </div>
+                    {/* Baca Selengkapnya Button */}
+                <div className="pt-3 border-t border-gray-100 text-center">
+                   <Link
+                     href={`/detailpotensi?id=${item.id || item._id}`}
+                    className="bg-orange-500 hover:bg-orange-500 text-white-500 text-xs px-6 py-2 rounded-full transition-colors font-medium"
+                  >
+                    Baca Selengkapnya <span>→</span>
+                  </Link>
+                </div>
                   </div>
                 </motion.div>
               );

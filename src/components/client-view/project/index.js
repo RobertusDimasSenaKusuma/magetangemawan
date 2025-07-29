@@ -11,6 +11,8 @@ export default function ClientProjectView({ data }) {
   const { scrollXProgress } = useScroll({ container: containerRef });
   const [imageErrors, setImageErrors] = useState({});
   const [currentPage, setCurrentPage] = useState(1);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [currentVideo, setCurrentVideo] = useState('');
   const projectsPerPage = 6; // Number of projects per page
 
   const handleImageError = (index) => {
@@ -29,6 +31,31 @@ export default function ClientProjectView({ data }) {
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
     window.scrollTo({ top: containerRef.current.offsetTop - 100, behavior: "smooth" });
+  };
+
+  // Function to handle YouTube video play
+  const handlePlayVideo = (youtubeUrl) => {
+    if (youtubeUrl) {
+      // Extract video ID from YouTube URL
+      const videoId = extractYouTubeVideoId(youtubeUrl);
+      if (videoId) {
+        setCurrentVideo(videoId);
+        setModalOpen(true);
+      }
+    }
+  };
+
+  // Function to extract YouTube video ID from URL
+  const extractYouTubeVideoId = (url) => {
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+    const match = url.match(regExp);
+    return (match && match[2].length === 11) ? match[2] : null;
+  };
+
+  // Function to close modal
+  const closeModal = () => {
+    setModalOpen(false);
+    setCurrentVideo('');
   };
 
   return (
@@ -78,9 +105,27 @@ export default function ClientProjectView({ data }) {
                   )}
                 </div>
                 <div className="mt-4 mb-2">
-                  <span className="inline-block bg-green1-500 text-white-300 text-sm font-semibold px-2 py-1 rounded-full">
-                    {item.github || "Uncategorized"}
-                  </span>
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="inline-block bg-green1-500 text-white-300 text-sm font-semibold px-2 py-1 rounded-full">
+                      {item.github || "Uncategorized"}
+                    </span>
+                    {item.youtube && item.youtube.trim() !== "" && (
+                      <button
+                        onClick={() => handlePlayVideo(item.youtube)}
+                        className="flex items-center space-x-1 bg-orange-500 hover:bg-orange-600 text-white-500 text-xs px-3 py-1 rounded-full transition-colors font-medium"
+                        title="Play Video"
+                      >
+                        <svg 
+                          className="w-3 h-3" 
+                          fill="currentColor" 
+                          viewBox="0 0 24 24"
+                        >
+                          <path d="M8 5v14l11-7z"/>
+                        </svg>
+                        <span>Play Dokumentasi</span>
+                      </button>
+                    )}
+                  </div>
                   <h3 className="mt-2 text-xl font-semibold text-black">{item.name}</h3>
                   <p className="mt-2 mb-4 text-gray-600 text-justify">
                   {item.technologies
@@ -134,6 +179,35 @@ export default function ClientProjectView({ data }) {
           </div>
         )}
       </AnimationWrapper>
+
+      {/* YouTube Modal */}
+      {modalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
+          <div className="relative bg-white rounded-lg shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
+            {/* Close Button */}
+            <button
+              onClick={closeModal}
+              className="absolute top-4 right-4 z-10 bg-gray-800 hover:bg-gray-700 text-white rounded-full p-2 transition-colors"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+            
+            {/* Video Container */}
+            <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
+              <iframe
+                className="absolute top-0 left-0 w-full h-full"
+                src={`https://www.youtube.com/embed/${currentVideo}?autoplay=1`}
+                title="YouTube video player"
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              ></iframe>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

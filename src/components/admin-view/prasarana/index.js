@@ -1,50 +1,20 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import FormControls from "../form-controls";
+import { FaEdit, FaTrash, FaPlus, FaEye, FaEyeSlash } from "react-icons/fa";
 import Image from "next/image";
 
-const controls = [
-  {
-    name: "name",
-    placeholder: "Masukkan judul artikel atau berita",
-    type: "text",
-    label: "Judul Artikel atau Berita",
-  },
-  {
-    name: "technologies",
-    placeholder: "Masukkan deskripsi atau isi berita",
-    type: "textarea",
-    label: "Deskripsi atau Isi Berita",
-  },
-  {
-    name: "website",
-    placeholder: "Masukkan nama penulis",
-    type: "text",
-    label: "Penulis",
-  },
-];
-
-const categoryOptions = [
-  { value: "", label: "Pilih Kategori" },
-  { value: "wisata", label: "Wisata" },
-  { value: "situs", label: "Situs" },
-  { value: "umum", label: "Umum" },
-  { value: "masyarakat", label: "Masyarakat" },
-  { value: "budaya", label: "Budaya" },
-  { value: "sejarah", label: "Sejarah" },
-  { value: "ekonomi", label: "Ekonomi" },
-  { value: "pendidikan", label: "Pendidikan" },
-];
-
-export default function AdminProjectView({ 
+export default function AdminPrasaranaView({ 
   formData, 
   setFormData, 
   handleSaveData, 
-  data 
+  data, 
+  update, 
+  setUpdate 
 }) {
   const [selectedImage, setSelectedImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
+  const [showOptionalFields, setShowOptionalFields] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [error, setError] = useState('');
@@ -58,6 +28,18 @@ export default function AdminProjectView({
   // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(5);
+
+  const kategoriOptions = [
+    { value: "", label: "Pilih Kategori" },
+    { value: "Transportasi", label: "Transportasi" },
+    { value: "Pendidikan", label: "Pendidikan" },
+    { value: "Kesehatan", label: "Kesehatan" },
+    { value: "Ibadah", label: "Ibadah" },
+    { value: "Olahraga", label: "Olahraga" },
+    { value: "Sosial", label: "Sosial" },
+    { value: "Ekonomi", label: "Ekonomi" },
+    { value: "Lainnya", label: "Lainnya" }
+  ];
 
   // Calculate pagination
   const totalItems = data ? data.length : 0;
@@ -109,7 +91,7 @@ export default function AdminProjectView({
       const maxSize = 5 * 1024 * 1024; // 5MB
 
       if (!allowedTypes.includes(file.type)) {
-        setError('Please select a valid image file (JPEG, PNG,jpg)');
+        setError('Please select a valid image file (JPEG, PNG, JPG)');
         return;
       }
 
@@ -129,99 +111,97 @@ export default function AdminProjectView({
     }
   };
 
-  const handleSubmitProject = async (e) => {
-  if (e) e.preventDefault();
-  setIsLoading(true);
-  setError('');
+  const handleSubmitPrasarana = async (e) => {
+    if (e) e.preventDefault();
+    setIsLoading(true);
+    setError('');
 
-  try {
-    if (!formData.name || !formData.technologies || !formData.github) {
-      setError('Judul, deskripsi, dan kategori wajib diisi');
+    try {
+      if (!formData.nama || !formData.kategori || !formData.deskripsi || !formData.tahun_pembangunan || !formData.lokasi) {
+        setError('Nama, kategori, deskripsi, tahun pembangunan, dan lokasi wajib diisi');
+        setIsLoading(false);
+        return;
+      }
+
+      const formDataToSend = new FormData();
+
+      // Tambahkan ID jika sedang dalam mode edit
+      if (isEditing && editingItem?._id) {
+        formDataToSend.append("id", editingItem._id);
+      }
+
+      formDataToSend.append('nama', formData.nama.trim());
+      formDataToSend.append('kategori', formData.kategori.trim());
+      formDataToSend.append('deskripsi', formData.deskripsi.trim());
+      formDataToSend.append('tahun_pembangunan', formData.tahun_pembangunan.toString());
+      formDataToSend.append('lokasi', formData.lokasi.trim());
+      formDataToSend.append('maps_link', formData.maps_link?.trim() || '');
+
+      if (selectedImage) {
+        formDataToSend.append('foto', selectedImage);
+      }
+
+      const url = isEditing ? `/api/prasarana/update` : '/api/prasarana/add';
+      const method = isEditing ? 'PUT' : 'POST';
+
+      const response = await fetch(url, {
+        method,
+        body: formDataToSend,
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`HTTP error! status: ${response.status}\n${errorText}`);
+      }
+
+      const result = await response.json();
+
+      if (result.success) {
+        // Reset form dan tutup modal
+        resetForm();
+        setIsModalOpen(false);
+        setError('');
+        showAlert('success', isEditing ? 'Prasarana berhasil diupdate!' : 'Prasarana berhasil ditambahkan!');
+        setTimeout(() => window.location.reload(), 1500);
+      } else {
+        setError(result.message || `Gagal ${isEditing ? 'mengupdate' : 'menambahkan'} prasarana`);
+      }
+
+    } catch (error) {
+      console.error(`Error saat ${isEditing ? 'update' : 'tambah'}:`, error);
+      setError(error.message || `Terjadi kesalahan saat ${isEditing ? 'update' : 'tambah'} prasarana`);
+    } finally {
       setIsLoading(false);
-      return;
     }
-
-    const formDataToSend = new FormData();
-
-    // Tambahkan ID jika sedang dalam mode edit
-    if (isEditing && editingItem?._id) {
-      formDataToSend.append("id", editingItem._id); // ✅ FIX
-    }
-
-    formDataToSend.append('name', formData.name.trim());
-    formDataToSend.append('technologies', formData.technologies.trim());
-    formDataToSend.append('website', formData.website?.trim() || '');
-    formDataToSend.append('github', formData.github?.trim() || '');
-    formDataToSend.append('youtube', formData.youtube?.trim() || ''); // Add YouTube field
-
-    if (selectedImage) {
-      formDataToSend.append('image', selectedImage);
-    }
-
-    const url = isEditing ? `/api/project/update` : '/api/project/add';
-    const method = isEditing ? 'PUT' : 'POST';
-
-    const response = await fetch(url, {
-      method,
-      body: formDataToSend,
-      credentials: 'include',
-    });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`HTTP error! status: ${response.status}\n${errorText}`);
-    }
-
-    const result = await response.json();
-
-    if (result.success) {
-      // Reset form dan tutup modal
-      setFormData({ name: '', technologies: '', website: '', github: '', youtube: '' }); // Add YouTube to reset
-      setSelectedImage(null);
-      setImagePreview(null);
-      setIsModalOpen(false);
-      setError('');
-      setIsEditing(false);
-      setEditingItem(null);
-      showAlert('success', isEditing ? 'Artikel berhasil diupdate!' : 'Artikel berhasil ditambahkan!');
-      setTimeout(() => window.location.reload(), 1500);
-    } else {
-      setError(result.message || `Gagal ${isEditing ? 'mengupdate' : 'menambahkan'} artikel`);
-    }
-
-  } catch (error) {
-    console.error(`Error saat ${isEditing ? 'update' : 'tambah'}:`, error);
-    setError(error.message || `Terjadi kesalahan saat ${isEditing ? 'update' : 'tambah'} artikel`);
-  } finally {
-    setIsLoading(false);
-  }
-};
+  };
 
   const handleEdit = (item) => {
     console.log('Editing item:', item);
     setEditingItem(item);
     setIsEditing(true);
     setFormData({
-      name: item.name || '',
-      technologies: item.technologies || '',
-      website: item.website || '',
-      github: item.github || '',
-      youtube: item.youtube || '' // Add YouTube field to edit
+      nama: item.nama || '',
+      kategori: item.kategori || '',
+      deskripsi: item.deskripsi || '',
+      tahun_pembangunan: item.tahun_pembangunan || '',
+      lokasi: item.lokasi || '',
+      maps_link: item.maps_link || ''
     });
-    if (item.image) {
-      setImagePreview(item.image);
+    if (item.foto) {
+      setImagePreview(item.foto);
     }
-    setSelectedImage(null); // Reset selected image ketika edit
+    setSelectedImage(null);
     setError('');
     setIsModalOpen(true);
   };
 
   const handleDelete = async (itemId) => {
     showConfirmDialog(
-      'Apakah Anda yakin ingin menghapus artikel ini?',
+      'Apakah Anda yakin ingin menghapus prasarana ini?',
       async () => {
         try {
-          const response = await fetch(`/api/project/delete`, {
+          const response = await fetch(`/api/prasarana/delete`, {
             method: 'DELETE',
             headers: {
               'Content-Type': 'application/json',
@@ -237,16 +217,16 @@ export default function AdminProjectView({
           const result = await response.json();
 
           if (result.success) {
-            showAlert('success', 'Artikel berhasil dihapus!');
+            showAlert('success', 'Prasarana berhasil dihapus!');
             setTimeout(() => {
               window.location.reload();
             }, 1500);
           } else {
-            showAlert('error', result.message || 'Failed to delete project');
+            showAlert('error', result.message || 'Failed to delete prasarana');
           }
         } catch (error) {
-          console.error('Error deleting project:', error);
-          showAlert('error', 'An error occurred while deleting the project');
+          console.error('Error deleting prasarana:', error);
+          showAlert('error', 'An error occurred while deleting the prasarana');
         }
       }
     );
@@ -263,6 +243,8 @@ export default function AdminProjectView({
     setEditingItem(null);
     setSelectedImage(null);
     setImagePreview(null);
+    setShowOptionalFields(false);
+    resetForm();
     setIsModalOpen(true);
   };
 
@@ -273,14 +255,22 @@ export default function AdminProjectView({
     setImagePreview(null);
     setIsEditing(false);
     setEditingItem(null);
-    // Reset form when closing modal
+    setShowOptionalFields(false);
+    resetForm();
+  };
+
+  const resetForm = () => {
     setFormData({
-      name: '',
-      technologies: '',
-      website: '',
-      github: '',
-      youtube: '' // Add YouTube to reset
+      nama: "",
+      kategori: "",
+      deskripsi: "",
+      tahun_pembangunan: "",
+      lokasi: "",
+      maps_link: ""
     });
+    setImagePreview(null);
+    setSelectedImage(null);
+    setUpdate(false);
   };
 
   // Alert Component
@@ -288,12 +278,13 @@ export default function AdminProjectView({
     const alertStyles = {
       success: 'bg-green-500 text-white-500',
       error: 'bg-orange-500 text-white-500',
-      warning: 'bg-green-500 text-white-500',
+      warning: 'bg-green2-500 text-white-500',
       info: 'bg-blue-500 text-white-500'
     };
 
+
     return (
-      <div className={`flex items-center text-white-500 ${alertStyles[type]} text-white-500 text-sm font-bold px-4 py-3 rounded-lg mb-4 shadow-lg`} role="alert">
+      <div className={`flex items-center text-white-500 ${alertStyles[type]}text-white-500 text-sm font-bold px-4 py-3 rounded-lg mb-4 shadow-lg`} role="alert">
         <p className="flex-1 text-white-500">{message}</p>
         <button 
           onClick={onClose}
@@ -363,7 +354,7 @@ export default function AdminProjectView({
     return (
       <div className="flex items-center justify-between px-6 py-4 bg-gray-50 border-t">
         <div className="flex items-center text-sm text-gray-700">
-          Showing {startIndex + 1} to {Math.min(endIndex, totalItems)} of {totalItems} projects
+          Showing {startIndex + 1} to {Math.min(endIndex, totalItems)} of {totalItems} prasarana
         </div>
         
         <div className="flex items-center space-x-2">
@@ -456,15 +447,15 @@ export default function AdminProjectView({
       )}
 
       <div className="bg-white shadow-lg rounded-lg overflow-hidden">
-        {/* Existing Projects Table */}
+        {/* Data Prasarana Table */}
         <div className="p-6 border-b">
-          <div className="flex justify-between items-center">
-            <h2 className="text-2xl font-bold text-gray-800">Manajemen Berita & Artikel</h2>
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-2xl font-bold text-gray-800">Manajemen Data Prasarana</h2>
             <button
               onClick={openModal}
               className="px-2 py-1 mt-2 bg-green1-500 text-white-500 rounded-lg hover:bg-green-600 transition-all duration-200 shadow-lg font-semibold"
             >
-              Tambah Konten
+              Tambah Prasarana
             </button>
           </div>
           
@@ -474,24 +465,24 @@ export default function AdminProjectView({
                 <table className="w-full table-fixed divide-y divide-gray-200">
                   <thead className="bg-gray-50">
                     <tr>
-                      <th className="w-20 px-3 py-3 text-center text-xs font-medium text-white uppercase tracking-wider">Gambar</th>
-                      <th className="w-64 px-3 py-3 text-center text-xs font-medium text-white uppercase tracking-wider">Judul</th>
+                      <th className="w-20 px-3 py-3 text-center text-xs font-medium text-white uppercase tracking-wider">Foto</th>
+                      <th className="w-64 px-3 py-3 text-center text-xs font-medium text-white uppercase tracking-wider">Nama</th>
+                      <th className="w-32 px-3 py-3 text-center text-xs font-medium text-white uppercase tracking-wider">Kategori</th>
                       <th className="w-60 px-3 py-3 text-center text-xs font-medium text-white uppercase tracking-wider">Deskripsi</th>
-                      <th className="w-32 px-3 py-3 text-center text-xs font-medium text-white uppercase tracking-wider">Penulis</th>
-                      <th className="w-24 px-3 py-3 text-center text-xs font-medium text-white uppercase tracking-wider">Kategori</th>
-                      <th className="w-28 px-3 py-3 text-center text-xs font-medium text-white uppercase tracking-wider">Tanggal</th>
-                      <th className="w-42 px-3 py-3 text-center text-xs font-medium text-white uppercase tracking-wider">Aksi</th>
+                      <th className="w-24 px-3 py-3 text-center text-xs font-medium text-white uppercase tracking-wider">Tahun</th>
+                      <th className="w-40 px-3 py-3 text-center text-xs font-medium text-white uppercase tracking-wider">Lokasi</th>
+                      <th className="w-32 px-3 py-3 text-center text-xs font-medium text-white uppercase tracking-wider">Aksi</th>
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
                     {currentData.map((item, index) => (
                       <tr key={index} className="hover:bg-gray-50 transition-colors">
                         <td className="px-3 py-4">
-                          {item.image ? (
+                          {item.foto ? (
                             <div className="relative w-14 h-14 flex-shrink-0">
                               <Image
-                                src={item.image}
-                                alt={item.name}
+                                src={item.foto}
+                                alt={item.nama}
                                 fill
                                 className="object-cover rounded-lg shadow-sm"
                               />
@@ -504,49 +495,45 @@ export default function AdminProjectView({
                         </td>
                         <td className="px-3 py-4">
                           <div className="text-sm font-medium text-gray-900 break-words text-center">
-                            {truncateText(item.name, 60)}
-                          </div>
-                        </td>
-                        <td className="px-3 py-4">
-                          <div className="text-sm text-gray-900 break-words text-justify">
-                            {truncateText(item.technologies, 80)}
-                          </div>
-                        </td>
-                        <td className="px-3 py-4">
-                          <div className="text-sm text-gray-900 break-words text-center">
-                            {truncateText(item.website || 'N/A', 20)}
+                            {truncateText(item.nama, 60)}
                           </div>
                         </td>
                         <td className="px-3 py-4">
                           <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 capitalize text-center">
-                            {item.github || 'N/A'}
+                            {item.kategori || 'N/A'}
                           </span>
                         </td>
                         <td className="px-3 py-4">
-                          <div className="text-xs text-white text-center">
-                            {new Date(item.createdAt).toLocaleDateString('id-ID', {
-                              day: '2-digit',
-                              month: '2-digit',
-                              year: '2-digit'
-                            })}
+                          <div className="text-sm text-gray-900 break-words text-justify">
+                            {truncateText(item.deskripsi, 80)}
                           </div>
                         </td>
-                        <td className="px-3 py-4 text-center">
-                        <div className="flex flex-row items-center justify-center space-x-2">
-                          <button
-                            onClick={() => handleEdit(item)}
-                            className="px-2 py-1 text-xs font-medium rounded text-white-500 bg-orange-200 hover:bg-blue-700 transition-colors"
-                          >
-                            Edit
-                          </button>
-                          <button
-                            onClick={() => handleDelete(item._id)}
-                            className="px-2 py-1 text-xs font-medium rounded text-white-500 bg-orange-500 hover:bg-red-700 transition-colors"
-                          >
-                            Delete
-                          </button>
-                        </div>
-                      </td>
+                        <td className="px-3 py-4">
+                          <div className="text-sm text-gray-900 break-words text-center">
+                            {item.tahun_pembangunan || 'N/A'}
+                          </div>
+                        </td>
+                        <td className="px-3 py-4">
+                          <div className="text-sm text-gray-900 break-words text-center">
+                            {truncateText(item.lokasi || 'N/A', 30)}
+                          </div>
+                        </td>
+                        <td className="px-3 py-4">
+                          <div className="flex flex-row space-x-2">
+                            <button
+                              onClick={() => handleEdit(item)}
+                              className="px-2 py-1 text-xs font-medium rounded text-white-500 bg-orange-200 hover:bg-blue-700 transition-colors"
+                            >
+                              Edit
+                            </button>
+                            <button
+                              onClick={() => handleDelete(item._id)}
+                              className="px-2 py-1 text-xs font-medium rounded text-white-500 bg-orange-500 hover:bg-red-700 transition-colors"
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        </td>
                       </tr>
                     ))}
                   </tbody>
@@ -558,9 +545,9 @@ export default function AdminProjectView({
             </>
           ) : (
             <div className="text-center py-12">
-              <div className="text-gray-400 text-6xl mb-4">📁</div>
-              <p className="text-gray-500 text-lg">No projects found</p>
-              <p className="text-gray-400 text-sm">Click "Tambah Artikel Baru" to get started</p>
+              <div className="text-gray-400 text-6xl mb-4">🏗️</div>
+              <p className="text-gray-500 text-lg">No prasarana found</p>
+              <p className="text-gray-400 text-sm">Click "Tambah Prasarana Baru" to get started</p>
             </div>
           )}
         </div>
@@ -569,17 +556,17 @@ export default function AdminProjectView({
       {/* Enhanced Modal with New Layout */}
       {isModalOpen && (
         <>
-          {/* Modal Backdrop */}
+         {/* Modal Backdrop */}
         <div className="fixed inset-0 bg-black bg-opacity-50 z-40"></div>
 
         {/* Modal Content */}
         <div className="fixed inset-0 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[85vh] overflow-hidden relative">
+          <div className="bg-white-500 rounded-xl shadow-2xl w-full max-w-3xl max-h-[85vh] overflow-hidden relative">
             {/* Modal Header */}
             <div className="bg-white-500 p-3">
               <div className="flex justify-between items-center">
                 <h2 className="text-xl font-bold text-white">
-                  {isEditing ? 'Edit Artikel & Berita' : 'Tambah Artikel & Berita Baru'}
+                  {isEditing ? 'Edit Prasarana' : 'Tambah Prasarana Baru'}
                 </h2>
                 <button
                   onClick={closeModal}
@@ -591,8 +578,8 @@ export default function AdminProjectView({
             </div>
 
             {/* Modal Body */}
-            <div className="bg-white-500 p-4 overflow-y-auto max-h-[calc(85vh-100px)]">
-              <form onSubmit={handleSubmitProject} className="space-y-4">
+            <div className="bg-white p-4 overflow-y-auto max-h-[calc(85vh-100px)]">
+              <form onSubmit={handleSubmitPrasarana} className="space-y-4">
                 {/* Error Message */}
                 {error && (
                   <div className="bg-red-100 border-l-4 border-red-500 p-3 rounded-lg">
@@ -603,93 +590,98 @@ export default function AdminProjectView({
                   </div>
                 )}
 
-                {/* Judul - Full Width */}
-                <div>
-                  <label className="block text-gray-700 text-sm font-medium mb-1">
-                    Judul Artikel atau Berita *
-                  </label>
-                  <input
-                    type="text"
-                    name="name"
-                    value={formData.name}
-                    onChange={(e) => setFormData({...formData, name: e.target.value})}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 transition-colors text-sm"
-                    placeholder="Masukkan judul artikel atau berita"
-                  />
-                </div>
-
-                {/* Kategori dan Penulis - Side by Side */}
+                {/* Nama dan Kategori - Side by Side */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-gray-700 text-sm font-medium mb-1">
-                      Kategori *
+                      Nama Prasarana 
+                    </label>
+                    <input
+                      type="text"
+                      name="nama"
+                      value={formData.nama}
+                      onChange={(e) => setFormData({...formData, nama: e.target.value})}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 transition-colors text-sm"
+                      placeholder="Masukkan nama prasarana"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-gray-700 text-sm font-medium mb-1">
+                      Kategori 
                     </label>
                     <select
-                      name="github"
-                      value={formData.github}
-                      onChange={(e) => setFormData({...formData, github: e.target.value})}
+                      name="kategori"
+                      value={formData.kategori}
+                      onChange={(e) => setFormData({...formData, kategori: e.target.value})}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 transition-colors text-sm"
+                      required
                     >
-                      {categoryOptions.map((option) => (
+                      {kategoriOptions.map((option) => (
                         <option key={option.value} value={option.value}>
                           {option.label}
                         </option>
                       ))}
                     </select>
                   </div>
+                </div>
+
+                {/* Tahun Pembangunan dan Lokasi - Side by Side */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-gray-700 text-sm font-medium mb-1">
+                      Tahun Pembangunan 
+                    </label>
+                    <input
+                      type="number"
+                      name="tahun_pembangunan"
+                      value={formData.tahun_pembangunan}
+                      onChange={(e) => setFormData({...formData, tahun_pembangunan: e.target.value})}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 transition-colors text-sm"
+                      placeholder="2020"
+                      min="1900"
+                      max={new Date().getFullYear()}
+                      required
+                    />
+                  </div>
 
                   <div>
                     <label className="block text-gray-700 text-sm font-medium mb-1">
-                      Penulis
+                      Lokasi 
                     </label>
                     <input
                       type="text"
-                      name="website"
-                      value={formData.website}
-                      onChange={(e) => setFormData({...formData, website: e.target.value})}
+                      name="lokasi"
+                      value={formData.lokasi}
+                      onChange={(e) => setFormData({...formData, lokasi: e.target.value})}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 transition-colors text-sm"
-                      placeholder="Masukkan nama penulis"
+                      placeholder="Dusun/Desa, Kecamatan"
+                      required
                     />
                   </div>
                 </div>
 
-                {/* Link YouTube - Full Width */}
+                {/* Deskripsi - Full Width */}
                 <div>
                   <label className="block text-gray-700 text-sm font-medium mb-1">
-                    Link Video Dokumentasi YouTube (Opsional)
-                  </label>
-                  <input
-                    type="url"
-                    name="youtube"
-                    value={formData.youtube || ''}
-                    onChange={(e) => setFormData({...formData, youtube: e.target.value})}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 transition-colors text-sm"
-                    placeholder="https://www.youtube.com/watch?v=..."
-                  />
-                  <p className="text-xs text-gray-600 mt-1">
-                    Masukkan link YouTube jika artikel memiliki video terkait
-                  </p>
-                </div>
-
-                {/* Deskripsi - Large Text Area */}
-                <div>
-                  <label className="block text-gray-700 text-sm font-medium mb-1">
-                    Deskripsi atau Isi Berita dan artikel *
+                    Deskripsi 
                   </label>
                   <textarea
-                    name="technologies"
-                    value={formData.technologies}
-                    onChange={(e) => setFormData({...formData, technologies: e.target.value})}
-                    rows={6}
+                    name="deskripsi"
+                    value={formData.deskripsi}
+                    onChange={(e) => setFormData({...formData, deskripsi: e.target.value})}
+                    rows={5}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 transition-colors resize-vertical text-sm"
-                    placeholder="Masukkan deskripsi atau isi berita secara detail..."
+                    placeholder="Masukkan deskripsi prasarana secara detail..."
+                    required
                   />
                 </div>
 
                 {/* Image Upload Section */}
                 <div className="border border-gray-300 rounded-lg p-4 bg-gray-50">
                   <label className="block text-gray-700 text-sm font-medium mb-2">
-                    Gambar Artikel atau Berita
+                    Foto Prasarana
                   </label>
                   
                   <div className="space-y-3">
@@ -700,7 +692,7 @@ export default function AdminProjectView({
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 transition-colors bg-white text-sm"
                     />
                     <p className="text-xs text-gray-600">
-                      Format yang didukung: JPEG, PNG , jpg. Ukuran maksimal: 5MB
+                      Format yang didukung: JPEG, PNG, JPG. Ukuran maksimal: 5MB
                     </p>
                     {isEditing && !selectedImage && (
                       <p className="text-xs text-blue-600">
@@ -736,12 +728,45 @@ export default function AdminProjectView({
                   )}
                 </div>
 
+                {/* Toggle Optional Fields */}
+                <div>
+                  <button
+                    type="button"
+                    onClick={() => setShowOptionalFields(!showOptionalFields)}
+                    className="flex items-center space-x-2 text-blue-600 hover:text-blue-800 font-medium text-sm"
+                  >
+                    {showOptionalFields ? <FaEyeSlash /> : <FaEye />}
+                    <span>
+                      {showOptionalFields ? "Sembunyikan" : "Tampilkan"} Informasi Opsional (Link Maps)
+                    </span>
+                  </button>
+                </div>
+
+                {/* Optional Fields */}
+                {showOptionalFields && (
+                  <div className="border border-gray-300 rounded-lg p-4 bg-gray-50 space-y-4">
+                    <div>
+                      <label className="block text-gray-700 text-sm font-medium mb-1">
+                        Link Google Maps
+                      </label>
+                      <input
+                        type="url"
+                        name="maps_link"
+                        value={formData.maps_link}
+                        onChange={(e) => setFormData({...formData, maps_link: e.target.value})}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 transition-colors text-sm"
+                        placeholder="https://maps.google.com/..."
+                      />
+                    </div>
+                  </div>
+                )}
+
                 {/* Form Actions */}
                 <div className="flex justify-end space-x-3 pt-4 border-t border-gray-200 bg-gray-50 p-3 rounded-lg">
                   <button
                     type="button"
                     onClick={closeModal}
-                    className="px-4 py-2 bg-orange-500 text-white-500 rounded-lg hover:bg-gray-700 transition-colors font-medium shadow-md text-sm"
+                    className="px-4 py-2 bg-orange-500 text-white-500 rounded-lg hover:bg-orange-500 transition-colors font-medium shadow-md text-sm"
                   >
                     Batal
                   </button>
@@ -762,7 +787,7 @@ export default function AdminProjectView({
                         </svg>
                         {isEditing ? 'Mengupdate...' : 'Menambahkan...'}
                       </span>
-                    ) : (isEditing ? 'Update Artikel' : 'Tambah Artikel')}
+                    ) : (isEditing ? 'Update Prasarana' : 'Tambah Prasarana')}
                   </button>
                 </div>
               </form>

@@ -27,6 +27,11 @@ const ProjectSchema = new mongoose.Schema(
       type: String,
       default: '', // URL gambar dari Cloudinary
       trim: true
+    },
+     youtube: {
+      type: String,
+      default: '',
+      trim: true
     }
   },
   { 

@@ -1,4 +1,4 @@
-// api/project/add/route.js
+// api/project/update/route.js
 import connectToDB from "@/database";
 import Project from "@/models/Project";
 import { NextResponse } from "next/server";
@@ -12,8 +12,8 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-export const dynamic = "force-dynamic";
-export const runtime = "nodejs"; // Hindari Edge runtime
+export const dynamic = "force-dynamic"; // Hindari cache
+export const runtime = "nodejs";        // Pakai Node, bukan Edge
 
 export async function PUT(request) {
   try {
@@ -25,20 +25,33 @@ export async function PUT(request) {
     const technologies = formData.get("technologies");
     const website = formData.get("website");
     const github = formData.get("github");
-    const image = formData.get("image");
+    const youtube = formData.get("youtube"); // Tambahan field youtube
+    const image = formData.get("image"); // File type
     const removeImage = formData.get("removeImage") === "true";
 
+    // Validasi ID
     if (!id || !mongoose.Types.ObjectId.isValid(id)) {
-      return NextResponse.json({ success: false, message: "Invalid or missing project ID" }, { status: 400 });
+      return NextResponse.json({ 
+        success: false, 
+        message: "Invalid or missing project ID" 
+      }, { status: 400 });
     }
 
+    // Validasi field required
     if (!name || !technologies || !github) {
-      return NextResponse.json({ success: false, message: "Name, technologies, and github are required" }, { status: 400 });
+      return NextResponse.json({ 
+        success: false, 
+        message: "Name, technologies, and github are required" 
+      }, { status: 400 });
     }
 
+    // Cek project exists
     const existingProject = await Project.findById(id);
     if (!existingProject) {
-      return NextResponse.json({ success: false, message: "Project not found" }, { status: 404 });
+      return NextResponse.json({ 
+        success: false, 
+        message: "Project not found" 
+      }, { status: 404 });
     }
 
     let imageUrl = existingProject.image;
@@ -48,25 +61,24 @@ export async function PUT(request) {
       try {
         const publicId = extractPublicId(existingProject.image);
         await cloudinary.uploader.destroy(`portfolio-projects/${publicId}`);
-        imageUrl = null;
-      } catch (err) {
-        console.error("Cloudinary delete error:", err);
-        return NextResponse.json({ success: false, message: "Failed to delete old image" }, { status: 500 });
+        imageUrl = '';
+      } catch (cloudErr) {
+        console.error("Cloudinary delete error:", cloudErr);
+        return NextResponse.json({
+          success: false,
+          message: "Image delete failed",
+          error: cloudErr.message
+        });
       }
     }
 
     // Upload image baru jika ada
     if (image && image.size > 0) {
-      const allowedTypes = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
-      if (!allowedTypes.includes(image.type)) {
-        return NextResponse.json({ success: false, message: "Invalid image type." }, { status: 400 });
-      }
-
       const bytes = await image.arrayBuffer();
       const buffer = Buffer.from(bytes);
-      const base64Image = `data:${image.type};base64,${buffer.toString("base64")}`;
+      const base64Image = `data:${image.type};base64,${buffer.toString('base64')}`;
 
-      // Hapus gambar lama (jika belum dihapus sebelumnya)
+      // Hapus gambar lama sebelum upload baru (jika belum dihapus sebelumnya)
       if (existingProject.image && !removeImage) {
         try {
           const publicId = extractPublicId(existingProject.image);
@@ -81,23 +93,31 @@ export async function PUT(request) {
           resource_type: "image",
           folder: "portfolio-projects",
           transformation: [
-            { width: 800, height: 600, crop: "fill" },
-            { quality: "auto" },
-          ],
+            {
+              quality: 50, // Compress 50%
+              format: "auto" // Format optimal otomatis (WebP, AVIF, dll)
+            }
+          ]
         });
 
         imageUrl = uploadResponse.secure_url;
-      } catch (err) {
-        console.error("Cloudinary upload error:", err);
-        return NextResponse.json({ success: false, message: "Image upload failed" }, { status: 500 });
+      } catch (cloudErr) {
+        console.error("Cloudinary upload error:", cloudErr);
+        return NextResponse.json({
+          success: false,
+          message: "Image upload failed",
+          error: cloudErr.message
+        });
       }
     }
 
+    // Update data project
     const updatedData = {
-      name: name.trim(),
-      technologies: technologies.trim(),
-      website: website?.trim() || "",
-      github: github.trim(),
+      name,
+      technologies,
+      website,
+      github,
+      youtube, // Tambahkan field youtube
       image: imageUrl,
     };
 
@@ -107,7 +127,10 @@ export async function PUT(request) {
     });
 
     if (!updatedProject) {
-      return NextResponse.json({ success: false, message: "Update failed" }, { status: 500 });
+      return NextResponse.json({ 
+        success: false, 
+        message: "Update failed" 
+      }, { status: 500 });
     }
 
     return NextResponse.json({
@@ -115,26 +138,31 @@ export async function PUT(request) {
       message: "Project updated successfully",
       data: updatedProject,
     });
-  } catch (e) {
-    console.error("UPDATE ERROR:", e);
 
-    let message = "Something went wrong!";
+  } catch (e) {
+    console.error("API Error:", e);
+
+    let message = "Something goes wrong! Please try again";
     if (e.name === "ValidationError") {
       message = Object.values(e.errors).map(err => err.message).join(", ");
     } else if (e.name === "CastError") {
       message = `Invalid ID: ${e.value}`;
     }
 
-    return NextResponse.json(
-      { success: false, message, error: process.env.NODE_ENV === "development" ? e.message : undefined },
-      { status: 500 }
-    );
+    return NextResponse.json({
+      success: false,
+      message,
+      error: e.message
+    }, { status: 500 });
   }
 }
 
 // GET method not allowed
 export async function GET() {
-  return NextResponse.json({ success: false, message: "Method not allowed" }, { status: 405 });
+  return NextResponse.json({ 
+    success: false, 
+    message: "Method not allowed" 
+  }, { status: 405 });
 }
 
 // 🔧 Ekstrak public ID dari URL Cloudinary
