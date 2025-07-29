@@ -302,14 +302,14 @@ export default function DetailKegiatanPage() {
       )}
       
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 py-8 mt-8">
+      <div className="max-w-7xl mx-auto px-4 py-8 mt-10">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Article Content */}
           <div className="lg:col-span-2">
             <article className="bg-white rounded-lg shadow-lg overflow-hidden">
               
               {/* Category Info and Stats */}
-              <div className="p-4 md:p-6 border-b border-gray-100">
+              <div className="p-4 md:p-2 border-b border-gray-100">
                 <div className="flex items-center justify-between">
                    {/* left side - Back button */}
                   <Link 
