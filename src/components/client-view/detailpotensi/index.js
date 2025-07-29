@@ -308,7 +308,7 @@ export default function DetailPotensiPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Article Content */}
           <div className="lg:col-span-2">
-            <article className="bg-white rounded-lg shadow-lg overflow-hidden mt-8">
+            <article className="bg-white rounded-lg shadow-lg overflow-hidden">
               
               {/* Category Info and Stats */}
               <div className="p-4 mt-8 md:p-6 border-b border-gray-100">
