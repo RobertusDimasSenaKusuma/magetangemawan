@@ -548,8 +548,8 @@ export default function DetailPrasaranaPage() {
                           {/* Content */}
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center space-x-2 mb-1">
-                              <ItemIcon className="w-3 h-3 text-blue-500" />
-                              <span className="text-xs text-blue-500">{item.kategori}</span>
+                              <ItemIcon className="w-3 h-3 text-green1-500" />
+                              <span className="text-xs text-green1-500">{item.kategori}</span>
                             </div>
                             <h4 className="font-semibold text-gray-800 mb-2 line-clamp-2 text-sm md:text-base group-hover:text-blue-600 transition-colors">
                               {item.nama || "Prasarana Lainnya"}
@@ -563,7 +563,7 @@ export default function DetailPrasaranaPage() {
                               </span>
                               <Link 
                                 href={`/detailprasarana?id=${item.id}`}
-                                className="bg-green1-500 hover:bg-blue-600 text-white text-xs px-3 py-1 rounded-full transition-colors font-medium"
+                                className="bg-green1-500 hover:bg-blue-600 text-white-500 text-xs px-3 py-1 rounded-full transition-colors font-medium"
                               >
                                 Lihat Detail
                               </Link>

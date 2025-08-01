@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from "next/image";
+import kadesImage from "../../../assets/fotokades.jpg"; // Background image
 
 export default function Sejarah() {
   const [activeTab, setActiveTab] = useState('sambutan');
@@ -213,21 +215,27 @@ export default function Sejarah() {
                   borderRadius: '1rem',
                   padding: '1rem',
                   textAlign: 'center',
-                  border: '2px dashed #d1d5db'
+                  border: '2px solid #059669'
                 }}>
                   <div style={{
                     width: 'clamp(150px, 20vw, 200px)',
                     height: 'clamp(200px, 25vw, 250px)',
-                    backgroundColor: '#e5e7eb',
                     borderRadius: '0.5rem',
                     margin: '0 auto 1rem auto',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: 'clamp(2rem, 5vw, 3rem)',
-                    color: '#9ca3af'
+                    overflow: 'hidden',
+                    boxShadow: '0 4px 10px rgba(0,0,0,0.1)'
                   }}>
-                    👤
+                    <Image
+                      src={kadesImage}
+                      alt="Kepala Desa Sumbersawit"
+                      width={200}
+                      height={250}
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'cover'
+                      }}
+                    />
                   </div>
                   <h4 style={{ 
                     fontSize: 'clamp(1rem, 2vw, 1.125rem)', 
@@ -239,10 +247,11 @@ export default function Sejarah() {
                   </h4>
                   <p style={{ 
                     fontSize: 'clamp(0.8rem, 2vw, 0.875rem)', 
-                    color: '#6b7280',
-                    margin: 0
+                    color: '#059669',
+                    margin: 0,
+                    fontWeight: '600'
                   }}>
-                    Foto akan ditambahkan di sini
+                    Bapak Sunyoto
                   </p>
                 </div>
               </div>

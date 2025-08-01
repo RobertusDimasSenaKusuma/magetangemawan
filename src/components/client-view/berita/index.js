@@ -18,6 +18,10 @@ export default function BeritaPage() {
   // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 4;
+  
+  // Modal states
+  const [showVideoModal, setShowVideoModal] = useState(false);
+  const [videoUrl, setVideoUrl] = useState('');
 
   useEffect(() => {
     if (id) {
@@ -82,6 +86,28 @@ export default function BeritaPage() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handlePlayVideo = (youtubeUrl) => {
+    if (youtubeUrl) {
+      // Convert YouTube URL to embed format
+      let embedUrl = youtubeUrl;
+      if (youtubeUrl.includes('watch?v=')) {
+        const videoId = youtubeUrl.split('watch?v=')[1].split('&')[0];
+        embedUrl = `https://www.youtube.com/embed/${videoId}`;
+      } else if (youtubeUrl.includes('youtu.be/')) {
+        const videoId = youtubeUrl.split('youtu.be/')[1].split('?')[0];
+        embedUrl = `https://www.youtube.com/embed/${videoId}`;
+      }
+      
+      setVideoUrl(embedUrl);
+      setShowVideoModal(true);
+    }
+  };
+
+  const closeVideoModal = () => {
+    setShowVideoModal(false);
+    setVideoUrl('');
   };
 
   const formatDate = (dateStr) => {
@@ -168,6 +194,35 @@ export default function BeritaPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* YouTube Modal */}
+      {showVideoModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
+          <div className="relative bg-white rounded-lg shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
+            {/* Close Button */}
+            <button
+              onClick={closeVideoModal}
+              className="absolute top-4 right-4 z-10 bg-gray-800 hover:bg-orange-500 text-white-500 rounded-full p-2 transition-colors"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+            
+            {/* Video Container */}
+            <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
+              <iframe
+                className="absolute top-0 left-0 w-full h-full"
+                src={`${videoUrl}?autoplay=1`}
+                title="YouTube video player"
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              ></iframe>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 py-8 mt-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -217,18 +272,39 @@ export default function BeritaPage() {
               {/* Article Body */}
               <div className="p-4 md:p-6">
                  {/* Left side - Author Info */}
-                  <div className="flex items-center space-x-3">
-                    <div className="w-12 h-12 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center flex-shrink-0">
-                      <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
-                      </svg>
+                  <div className="flex items-center justify-between space-x-3">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-12 h-12 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center flex-shrink-0">
+                        <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+                        </svg>
+                      </div>
+                      <div>
+                        <h3 className="font-semibold text-gray-800 text-sm md:text-base">
+                          {berita.website || "Admin Penulis"}
+                        </h3>
+                      </div>
                     </div>
-                    <div>
-                      <h3 className="font-semibold text-gray-800 text-sm md:text-base">
-                        {berita.website || "Admin Penulis"}
-                      </h3>
-                    </div>
+                    
+                    {/* YouTube Play Button */}
+                    {berita.youtube && berita.youtube.trim() !== "" && (
+                      <button
+                        onClick={() => handlePlayVideo(berita.youtube)}
+                        className="flex items-center space-x-1 bg-orange-500 hover:bg-orange-600 text-white-500 text-xs px-3 py-2 rounded-full transition-colors font-medium"
+                        title="Play Video"
+                      >
+                        <svg
+                           className="w-3 h-3"
+                           fill="currentColor"
+                           viewBox="0 0 24 24"
+                        >
+                          <path d="M8 5v14l11-7z"/>
+                        </svg>
+                        <span>Play Dokumentasi</span>
+                      </button>
+                    )}
                   </div>
+                  
                 {/* Title */}
                 <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-4 md:mb-6 leading-tight">
                   {berita.name || "Judul Berita"}

@@ -9,6 +9,8 @@ import {
   FaLeaf,
   FaPlay,
   FaTimes,
+  FaTiktok,
+  FaYoutube,
 } from "react-icons/fa";
 import Image from "next/image";
 import desaImage from "../../../assets/desa.jpg"; // Background image
@@ -34,17 +36,17 @@ function variants() {
 
 const features = [
   {
-    icon: <FaMapMarkerAlt className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-green-600" />,
+    icon: <FaMapMarkerAlt className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-orange-500" />,
     title: "Lokasi",
     desc: "Terletak di kecamatan Sidorejo kabupaten Magetan"
   },
   {
-    icon: <FaUsers className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-green-600" />,
+    icon: <FaUsers className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-blue-500" />,
     title: "Masyarakat Ramah",
     desc: "Warga yang gotong royong"
   },
   {
-    icon: <FaLeaf className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-green-600" />,
+    icon: <FaLeaf className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-green1-500" />,
     title: "Lingkungan Asri",
     desc: "Udara bersih dan sejuk"
   },
@@ -183,6 +185,30 @@ export default function ClientHomeView({ data }) {
                   Play Profil Desa
                 </button>
               </motion.div>
+
+              {/* Social Media Icons */}
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 1.0 }}
+                className="flex items-center gap-4 w-full"
+              >
+                <span className="text-gray-600 text-sm sm:text-base font-medium">
+                  Sosial Media Desa Kami
+                </span>
+                <a
+                  href="https://www.tiktok.com/@desa.sumbersawit?_t=ZS-8yTh18Pi1PG&_r=1"
+                  className="flex items-center justify-center w-12 h-12 bg-white-500 text-white rounded-full hover:bg-gray-800 transform hover:scale-110 transition-all duration-300 shadow-lg hover:shadow-xl"
+                >
+                  <FaTiktok className="w-5 h-5" />
+                </a>
+                <a
+                  href="https://youtube.com/@desasumbersawitmagetan?si=VOBFseiCY292nDM7"
+                  className="flex items-center justify-center w-12 h-12 bg-white-500 text-orange-500 rounded-full hover:bg-red-700 transform hover:scale-110 transition-all duration-300 shadow-lg hover:shadow-xl"
+                >
+                  <FaYoutube className="w-5 h-5" />
+                </a>
+              </motion.div>
             </div>
 
             {/* Image Section - Enhanced iPad Pro layout */}
@@ -292,7 +318,7 @@ export default function ClientHomeView({ data }) {
       </button>
 
       {/* Video container */}
-      <div className="relative pb-[56.25%] h-0">
+      <div className="relative pb-[56.25%] h-0">F
         <iframe
           className="absolute top-0 left-0 w-full h-full"
           src="https://www.youtube.com/embed/T8qE5AcE1yY?autoplay=1"
