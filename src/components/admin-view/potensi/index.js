@@ -639,23 +639,22 @@ export default function AdminPotensiView({
 
                 {/* Tahun Mulai dan Lokasi - Side by Side */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-gray-700 text-sm font-medium mb-1">
-                      Tahun Mulai 
-                    </label>
-                    <input
-                      type="number"
-                      name="tahun_mulai"
-                      value={formData.tahun_mulai}
-                      onChange={(e) => setFormData({...formData, tahun_mulai: e.target.value})}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 transition-colors text-sm"
-                      placeholder="2020"
-                      min="1900"
-                      max={new Date().getFullYear()}
-                      required
-                    />
-                  </div>
-
+                <div>
+                  <label className="block text-gray-700 text-sm font-medium mb-1">
+                    Tahun Unggah
+                  </label>
+                  <input
+                    type="number"
+                    name="tahun_mulai"
+                    value={formData.tahun_mulai || new Date().getFullYear()}
+                    onChange={(e) => setFormData({...formData, tahun_mulai: e.target.value})}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 transition-colors text-sm"
+                    placeholder={new Date().getFullYear().toString()}
+                    min="1900"
+                    max={new Date().getFullYear()}
+                    required
+                  />
+                </div>
                   <div>
                     <label className="block text-gray-700 text-sm font-medium mb-1">
                       Lokasi 

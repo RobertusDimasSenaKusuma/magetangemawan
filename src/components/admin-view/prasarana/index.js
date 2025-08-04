@@ -630,21 +630,21 @@ export default function AdminPrasaranaView({
                 {/* Tahun Pembangunan dan Lokasi - Side by Side */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-gray-700 text-sm font-medium mb-1">
-                      Tahun Pembangunan 
-                    </label>
-                    <input
-                      type="number"
-                      name="tahun_pembangunan"
-                      value={formData.tahun_pembangunan}
-                      onChange={(e) => setFormData({...formData, tahun_pembangunan: e.target.value})}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 transition-colors text-sm"
-                      placeholder="2020"
-                      min="1900"
-                      max={new Date().getFullYear()}
-                      required
-                    />
-                  </div>
+                <label className="block text-gray-700 text-sm font-medium mb-1">
+                  Tahun Ungah
+                </label>
+                <input
+                  type="number"
+                  name="tahun_pembangunan"
+                  value={formData.tahun_pembangunan || new Date().getFullYear()}
+                  onChange={(e) => setFormData({...formData, tahun_pembangunan: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 transition-colors text-sm"
+                  placeholder={new Date().getFullYear().toString()}
+                  min="1900"
+                  max={new Date().getFullYear()}
+                  required
+                />
+              </div>
 
                   <div>
                     <label className="block text-gray-700 text-sm font-medium mb-1">
