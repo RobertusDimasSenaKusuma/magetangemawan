@@ -459,7 +459,7 @@ export default function AdminPotensiView({
       <div className="bg-white shadow-lg rounded-lg overflow-hidden">
         {/* Data Potensi Table */}
         <div className="p-6 border-b">
-          <div className="flex justify-between items-center mb-4">
+          <div className="flex justify-between items-center">
             <h2 className="text-2xl font-bold text-gray-800">Manajemen Data Potensi</h2>
             <button
               onClick={openModal}
@@ -475,19 +475,19 @@ export default function AdminPotensiView({
                 <table className="w-full table-fixed divide-y divide-gray-200">
                   <thead className="bg-gray-50">
                     <tr>
-                      <th className="w-20 px-3 py-3 text-center text-xs font-medium text-white uppercase tracking-wider">Foto</th>
-                      <th className="w-64 px-3 py-3 text-center text-xs font-medium text-white uppercase tracking-wider">Nama</th>
-                      <th className="w-32 px-3 py-3 text-center text-xs font-medium text-white uppercase tracking-wider">Kategori</th>
-                      <th className="w-60 px-3 py-3 text-center text-xs font-medium text-white uppercase tracking-wider">Deskripsi</th>
-                      <th className="w-24 px-3 py-3 text-center text-xs font-medium text-white uppercase tracking-wider">Tahun</th>
-                      <th className="w-40 px-3 py-3 text-center text-xs font-medium text-white uppercase tracking-wider">Lokasi</th>
-                      <th className="w-32 px-3 py-3 text-center text-xs font-medium text-white uppercase tracking-wider">Aksi</th>
+                      <th className="w-20 px-3 py-2 text-center text-xs font-medium text-white uppercase tracking-wider">Foto</th>
+                      <th className="w-64 px-3 py-2 text-center text-xs font-medium text-white uppercase tracking-wider">Nama</th>
+                      <th className="w-32 px-3 py-2 text-center text-xs font-medium text-white uppercase tracking-wider">Kategori</th>
+                      <th className="w-60 px-3 py-2 text-center text-xs font-medium text-white uppercase tracking-wider">Deskripsi</th>
+                      <th className="w-24 px-3 py-2 text-center text-xs font-medium text-white uppercase tracking-wider">Tahun</th>
+                      <th className="w-40 px-3 py-2 text-center text-xs font-medium text-white uppercase tracking-wider">Lokasi</th>
+                      <th className="w-32 px-3 py-2 text-center text-xs font-medium text-white uppercase tracking-wider">Aksi</th>
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
                     {currentData.map((item, index) => (
                       <tr key={index} className="hover:bg-gray-50 transition-colors">
-                        <td className="px-3 py-4">
+                        <td className="px-3 py-3">
                           {item.foto ? (
                             <div className="relative w-14 h-14 flex-shrink-0">
                               <Image
@@ -503,32 +503,32 @@ export default function AdminPotensiView({
                             </div>
                           )}
                         </td>
-                        <td className="px-3 py-4">
+                        <td className="px-3 py-3">
                           <div className="text-sm font-medium text-gray-900 break-words text-center">
                             {truncateText(item.nama, 60)}
                           </div>
                         </td>
-                        <td className="px-3 py-4">
+                        <td className="px-3 py-3">
                           <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 capitalize text-center">
                             {item.kategori || 'N/A'}
                           </span>
                         </td>
-                        <td className="px-3 py-4">
+                        <td className="px-3 py-3">
                           <div className="text-sm text-gray-900 break-words text-justify">
                             {truncateText(item.deskripsi, 80)}
                           </div>
                         </td>
-                        <td className="px-3 py-4">
+                        <td className="px-3 py-3">
                           <div className="text-sm text-gray-900 break-words text-center">
                             {item.tahun_mulai || 'N/A'}
                           </div>
                         </td>
-                        <td className="px-3 py-4">
+                        <td className="px-3 py-3">
                           <div className="text-sm text-gray-900 break-words text-center">
                             {truncateText(item.lokasi || 'N/A', 30)}
                           </div>
                         </td>
-                        <td className="px-3 py-4">
+                        <td className="px-3 py-3">
                           <div className="flex flex-row space-x-2">
                             <button
                               onClick={() => handleEdit(item)}

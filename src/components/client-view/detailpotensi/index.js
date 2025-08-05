@@ -356,7 +356,7 @@ export default function DetailPotensiPage() {
 
                 {/* Stats Cards */}
                <div className="gap-4 mb-2">
-                <div className="bg-blue-50 rounded-lg p-4">
+                <div className="bg-blue-50 rounded-lg p-2">
                     <MapPin className="w-6 h-6 text-orange-500 mb-2" />
                     <p className="text-sm text-gray-600">Lokasi</p>
                     <p className="font-semibold text-blue-600 text-justify break-words">{potensi.lokasi || "Desa Sumbersawit"}</p>
@@ -384,21 +384,10 @@ export default function DetailPotensiPage() {
                     <p className="text-sm md:text-base">
                       {potensi.deskripsi || "Deskripsi potensi akan ditampilkan di sini."}
                     </p>
-
-                    {/* Additional Info */}
-                    {potensi.tahun_mulai && (
-                      <div className="bg-gray-50 rounded-lg p-4 mt-4">
-                        <h4 className="text-sm font-semibold text-gray-700 mb-2">Informasi Tambahan:</h4>
-                        <p className="text-sm text-gray-600">
-                          <strong>Tahun Mulai:</strong> {potensi.tahun_mulai}
-                        </p>
-                      </div>
-                    )}
-
                     {/* Social Media Icons */}
                     {(potensi.shopee_link || potensi.facebook_link || potensi.instagram_link || potensi.whatsapp_link) && (
                       <div className="mt-4 pt-4 border-t border-gray-200">
-                        <h4 className="text-sm font-semibold text-gray-700 mb-3">Hubungi Usaha UMKM Kami:</h4>
+                        <h4 className="text-sm font-semibold text-gray-700 mb-3">Hubungi sosial media kami:</h4>
                         <div className="flex gap-3 flex-wrap">
                           {potensi.shopee_link && (
                             <a 
@@ -408,7 +397,7 @@ export default function DetailPotensiPage() {
                               className="w-8 h-8 bg-orange-500 hover:bg-orange-600 rounded-full flex items-center justify-center transition-colors duration-200 shadow-md hover:shadow-lg"
                               title="Shopee"
                             >
-                              <ShoppingBag className="w-4 h-4 text-white" />
+                              <ShoppingBag className="w-4 h-4 text-white-500" />
                             </a>
                           )}
                           {potensi.facebook_link && (
@@ -419,7 +408,7 @@ export default function DetailPotensiPage() {
                               className="w-8 h-8 bg-blue-500 hover:bg-blue-700 rounded-full flex items-center justify-center transition-colors duration-200 shadow-md hover:shadow-lg"
                               title="Facebook"
                             >
-                              <Facebook className="w-4 h-4 text-white" />
+                              <Facebook className="w-4 h-4 text-white-500" />
                             </a>
                           )}
                           {potensi.instagram_link && (
@@ -430,7 +419,7 @@ export default function DetailPotensiPage() {
                               className="w-8 h-8 bg-pink-500 hover:bg-pink-600 rounded-full flex items-center justify-center transition-colors duration-200 shadow-md hover:shadow-lg"
                               title="Instagram"
                             >
-                              <Instagram className="w-4 h-4 text-white" />
+                              <Instagram className="w-4 h-4 text-white-500" />
                             </a>
                           )}
                           {potensi.whatsapp_link && (
@@ -441,7 +430,7 @@ export default function DetailPotensiPage() {
                               className="w-8 h-8 bg-green-500 hover:bg-green-600 rounded-full flex items-center justify-center transition-colors duration-200 shadow-md hover:shadow-lg"
                               title="WhatsApp"
                             >
-                              <MessageCircle className="w-4 h-4 text-white" />
+                              <MessageCircle className="w-4 h-4 text-white-500" />
                             </a>
                           )}
                         </div>

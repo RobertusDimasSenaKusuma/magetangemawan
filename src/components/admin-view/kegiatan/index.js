@@ -472,18 +472,18 @@ export default function AdminKegiatanView({
                 <table className="w-full table-fixed divide-y divide-gray-200">
                   <thead className="bg-gray-50">
                     <tr>
-                      <th className="w-20 px-3 py-3 text-center text-xs font-medium text-white uppercase tracking-wider">Foto</th>
-                      <th className="w-48 px-3 py-3 text-center text-xs font-medium text-white uppercase tracking-wider">Nama</th>
-                      <th className="w-24 px-3 py-3 text-center text-xs font-medium text-white uppercase tracking-wider">Kategori</th>
-                      <th className="w-20 px-3 py-3 text-center text-xs font-medium text-white uppercase tracking-wider">Tahun</th>
-                      <th className="w-72 px-3 py-3 text-center text-xs font-medium text-white uppercase tracking-wider">Deskripsi</th>
-                      <th className="w-32 px-3 py-3 text-center text-xs font-medium text-white uppercase tracking-wider">Aksi</th>
+                      <th className="w-20 px-3 py-2 text-center text-xs font-medium text-white uppercase tracking-wider">Foto</th>
+                      <th className="w-48 px-3 py-2 text-center text-xs font-medium text-white uppercase tracking-wider">Nama</th>
+                      <th className="w-24 px-3 py-2 text-center text-xs font-medium text-white uppercase tracking-wider">Kategori</th>
+                      <th className="w-20 px-3 py-2 text-center text-xs font-medium text-white uppercase tracking-wider">Tahun</th>
+                      <th className="w-72 px-3 py-2 text-center text-xs font-medium text-white uppercase tracking-wider">Deskripsi</th>
+                      <th className="w-32 px-3 py-2 text-center text-xs font-medium text-white uppercase tracking-wider">Aksi</th>
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
                     {currentData.map((item, index) => (
                       <tr key={index} className="hover:bg-gray-50 transition-colors">
-                        <td className="px-3 py-4">
+                        <td className="px-3 py-3">
                           {item.foto ? (
                             <div className="relative w-14 h-14 flex-shrink-0">
                               <Image
@@ -499,27 +499,27 @@ export default function AdminKegiatanView({
                             </div>
                           )}
                         </td>
-                        <td className="px-3 py-4">
+                        <td className="px-3 py-3">
                           <div className="text-sm font-medium text-gray-900 break-words text-center">
                             {truncateText(item.nama, 50)}
                           </div>
                         </td>
-                        <td className="px-3 py-4">
+                        <td className="px-3 py-3">
                           <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 capitalize text-center">
                             {item.kategori || 'N/A'}
                           </span>
                         </td>
-                        <td className="px-3 py-4">
+                        <td className="px-3 py-3">
                           <div className="text-sm font-medium text-gray-900 text-center">
                             {item.tahun || 'N/A'}
                           </div>
                         </td>
-                        <td className="px-3 py-4">
+                        <td className="px-3 py-3">
                           <div className="text-sm text-gray-900 break-words text-justify">
                             {truncateText(item.deskripsi, 80)}
                           </div>
                         </td>
-                        <td className="px-3 py-4 text-center">
+                        <td className="px-3 py-3 text-center">
                         <div className="flex flex-row items-center justify-center space-x-2">
                             <button
                               onClick={() => handleEdit(item)}
