@@ -10,7 +10,7 @@ const PotensiSchema = new mongoose.Schema({
   kategori: {
     type: String,
     required: [true, "Kategori wajib diisi"],
-    enum: ["UMKM", "Wisata", "Pertanian", "Peternakan", "Kerajinan", "Lainnya"],
+    enum: ["UMKM", "Wisata", "Pertanian", "Peternakan", "Kerajinan","Situs","Budaya","Lainnya"],
     trim: true
   },
   deskripsi: {
