@@ -10,7 +10,7 @@ const PrasaranSchema = new mongoose.Schema({
   kategori: {
     type: String,
     required: [true, "Kategori wajib diisi"],
-    enum: ["Transportasi", "Pendidikan", "Kesehatan", "Ibadah", "Olahraga", "Sosial", "Ekonomi", "Lainnya"],
+    enum: ["Transportasi", "Pendidikan", "Kesehatan", "Ibadah", "Olahraga", "Sosial", "Ekonomi","Pertanian","Peternakan","Lainnya"],
     trim: true
   },
   deskripsi: {
