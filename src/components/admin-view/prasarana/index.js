@@ -38,6 +38,8 @@ export default function AdminPrasaranaView({
     { value: "Olahraga", label: "Olahraga" },
     { value: "Sosial", label: "Sosial" },
     { value: "Ekonomi", label: "Ekonomi" },
+    { value: "Peternakan", label: "Peternakan" },
+    { value: "Pertanian", label: "Pertanian" },
     { value: "Lainnya", label: "Lainnya" }
   ];
 

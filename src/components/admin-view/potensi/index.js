@@ -36,6 +36,8 @@ export default function AdminPotensiView({
     { value: "Pertanian", label: "Pertanian" },
     { value: "Peternakan", label: "Peternakan" },
     { value: "Kerajinan", label: "Kerajinan" },
+    { value: "Situs", label: "Situs" },
+     { value: "Budaya", label: "Budaya" },
     { value: "Lainnya", label: "Lainnya" }
   ];
 
